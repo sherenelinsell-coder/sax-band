@@ -147,6 +147,7 @@ async function load(){
   try{const j=await api({op:'all'}); if(pending) return;
     for(const c of ['events','members','rsvps','solos']){const o={};(j.data[c]||[]).forEach(x=>o[x.id]=x);S[c]=o}
     S.loaded=true; render();
+    try{localStorage.setItem('sax-cache',JSON.stringify(j.data))}catch(e){}
   }catch(e){if(!S.loaded){S.loaded=true;view.innerHTML='<p class="note">連不上資料，請檢查網路後重新整理。</p>'}}
 }
 try{me=localStorage.getItem('sax-me')||''}catch(e){}
@@ -386,6 +387,7 @@ document.addEventListener('submit',async ev=>{
 async function boot(){
   render(true);
   if(!API){S.loaded=true;view.innerHTML='<p class="note">尚未設定資料來源。</p>';return}
+  try{const c=JSON.parse(localStorage.getItem('sax-cache')||'null');if(c){for(const k of ['events','members','rsvps','solos']){const o={};(c[k]||[]).forEach(x=>o[x.id]=x);S[k]=o}S.loaded=true;render(true)}}catch(e){}
   await load();
   setInterval(()=>{if(!document.hidden&&!pending)load()},20000);
   document.addEventListener('visibilitychange',()=>{if(!document.hidden&&!pending)load()});
