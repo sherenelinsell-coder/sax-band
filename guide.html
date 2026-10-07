@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>樂團活動簿使用說明</title>
+<style>
+/* Layout: one reading column; each step is text beside its phone screenshot, stacked on narrow screens. */
+:root{color-scheme:light;--bg:#fbf3e4;--surface:#fffdf8;--ink:#574334;--muted:#8a7461;--line:#ecdcc4;--accent:#bf5b43;--sun:#fde8a6;--sun-ink:#6b4a16;
+  --font:"Chiron GoRound TC","Noto Sans TC","PingFang TC","Microsoft JhengHei",system-ui,sans-serif}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg) radial-gradient(var(--line) 1.3px,transparent 1.5px) 0 0/22px 22px;color:var(--ink);font-family:var(--font);font-size:17px;line-height:1.7}
+.wrap{max-width:820px;margin:0 auto;padding-inline:16px;padding-block:24px 64px;display:flex;flex-direction:column;gap:20px}
+h1{font-size:1.6rem;font-weight:900;margin:0;text-wrap:balance}
+h2{font-size:1.3rem;font-weight:900;margin:12px 0 0;padding:6px 16px;background:var(--sun);color:var(--sun-ink);border-radius:999px;align-self:flex-start}
+h3{font-size:1.1rem;font-weight:700;margin:0;text-wrap:balance}
+p{margin:0} a{color:var(--accent);font-weight:700}
+a:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.lead{color:var(--muted)}
+.toc{display:flex;flex-wrap:wrap;gap:10px}
+.toc a{background:var(--surface);border:2px solid var(--line);border-radius:999px;padding:6px 16px;text-decoration:none}
+ol{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:16px}
+.step{background:var(--surface);border:2px solid var(--line);border-radius:22px;box-shadow:0 4px 0 var(--line);padding:18px;display:grid;grid-template-columns:1fr 240px;gap:18px;align-items:start}
+.tx{display:flex;flex-direction:column;gap:8px;min-width:0}
+.no{width:2.2em;height:2.2em;border-radius:50%;background:var(--accent);color:var(--surface);font-weight:900;display:grid;place-items:center;font-variant-numeric:tabular-nums}
+.step img{width:100%;height:auto;max-width:100%;border-radius:16px;border:2px solid var(--line);display:block}
+.tip{background:var(--sun);color:var(--sun-ink);border-radius:16px;padding:14px 18px}
+.tip ul{margin:6px 0 0;padding-left:1.2em}
+@media (max-width:600px){.step{grid-template-columns:1fr} .step img{max-width:300px;margin:0 auto}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>金手獎薩克斯風樂團活動簿　使用說明</h1>
+  <p class="lead">用手機或電腦打開網址就能用，不用下載、不用登入。圖中紅框是要按的地方；圖裡的姓名是示範用的假名。</p>
+  <p><a href="./">開啟活動簿</a></p>
+  <nav class="toc" aria-label="目錄"><a href="#member">團員：報名參加或請假</a><a href="#leader">團長：新增與管理活動</a><a href="#tips">小提醒</a></nav>
+
+  <h2 id="member">團員篇</h2>
+  <ol>
+<li class="step"><div class="tx"><span class="no">1</span><h3>輸入自己的名字</h3><p>第一次使用時，在最上面「我是」的框框輸入名字。打出姓氏就會跳出名單，點選自己的名字即可。只要做一次，之後會自動記住。</p></div><img src="guide/m1.jpg" alt="輸入自己的名字的畫面" loading="lazy" width="585" height="1170"></li>
+<li class="step"><div class="tx"><span class="no">2</span><h3>每場活動會出現「參加」和「請假」</h3><p>選好名字後，每一場活動下面都會出現這兩個按鈕。</p></div><img src="guide/m2.jpg" alt="每場活動會出現「參加」和「請假」的畫面" loading="lazy" width="585" height="1170"></li>
+<li class="step"><div class="tx"><span class="no">3</span><h3>按「參加」或「請假」就完成報名</h3><p>按下去按鈕會變色，上面的人數也會跟著變。按錯了再按一次同一個按鈕就取消，或直接改按另一個。</p></div><img src="guide/m3.jpg" alt="按「參加」或「請假」就完成報名的畫面" loading="lazy" width="585" height="1170"></li>
+<li class="step"><div class="tx"><span class="no">4</span><h3>想看詳細內容，按「看名單與曲目」</h3><p>也可以直接點活動名稱。</p></div><img src="guide/m4.jpg" alt="想看詳細內容，按「看名單與曲目」的畫面" loading="lazy" width="585" height="1170"></li>
+<li class="step"><div class="tx"><span class="no">5</span><h3>活動詳細內容</h3><p>可以看到邀請單位、時間、集合時間、地點、攜伴、服裝、備註和曲目。左上角「回到上一頁」可以返回。</p></div><img src="guide/m5.jpg" alt="活動詳細內容的畫面" loading="lazy" width="585" height="1170"></li>
+<li class="step"><div class="tx"><span class="no">6</span><h3>名單與攜伴人數</h3><p>往下滑會看到參加、請假、未回覆三份名單。可以攜伴的場次，按了參加之後會出現「我的攜伴人數」可以選。也可以幫其他團員代為登記。</p></div><img src="guide/m6.jpg" alt="名單與攜伴人數的畫面" loading="lazy" width="585" height="1170"></li>
+<li class="step"><div class="tx"><span class="no">7</span><h3>開放獨奏／重奏的場次</h3><p>如果這場有開放，節目表下方會出現輸入框。填上表演者和曲目，按「新增我的曲目」就會排進節目表。</p></div><img src="guide/m7.jpg" alt="開放獨奏／重奏的場次的畫面" loading="lazy" width="585" height="1170"></li>
+<li class="step"><div class="tx"><span class="no">8</span><h3>行事曆</h3><p>按下方的「行事曆」，用月曆看哪天有演出。週末和國定假日是紅字。點「演出」可以看那一場的內容。</p></div><img src="guide/m8.jpg" alt="行事曆的畫面" loading="lazy" width="585" height="1170"></li>
+<li class="step"><div class="tx"><span class="no">9</span><h3>曲目庫</h3><p>按下方的「曲目庫」，可以看樂團演過哪些曲子、演過幾次、最近一次是哪天。</p></div><img src="guide/m9.jpg" alt="曲目庫的畫面" loading="lazy" width="585" height="1170"></li>
+  </ol>
+
+  <h2 id="leader">團長篇</h2>
+  <p class="lead">以下功能需要管理密碼，密碼請向管理者索取。</p>
+  <ol>
+<li class="step"><div class="tx"><span class="no">1</span><h3>按右下角紅色的「＋」</h3><p>這是新增活動的按鈕，在每個畫面的右下角。</p></div><img src="guide/l1.jpg" alt="按右下角紅色的「＋」的畫面" loading="lazy" width="585" height="1170"></li>
+<li class="step"><div class="tx"><span class="no">2</span><h3>輸入管理密碼</h3><p>新增、編輯、刪除活動都需要密碼。輸入一次之後，在關掉網頁之前不用再輸入。</p></div><img src="guide/l2.jpg" alt="輸入管理密碼的畫面" loading="lazy" width="585" height="1170"></li>
+<li class="step"><div class="tx"><span class="no">3</span><h3>填寫活動資料</h3><p>活動內容和日期一定要填，其他欄位有資料再填。集合時間可以自由輸入，例如「14:40」或「16:30-17:00」。</p></div><img src="guide/l3.jpg" alt="填寫活動資料的畫面" loading="lazy" width="585" height="1170"></li>
+<li class="step"><div class="tx"><span class="no">4</span><h3>加入曲目、設定是否開放獨奏</h3><p>曲目一首一首輸入後按「加入曲目」，演過的曲子會自動提示。用 ↑ ↓ 調整順序、✕ 刪除，編號會自動重排。要讓團員自己報獨奏或重奏，把上面的選項改成「開放」。</p></div><img src="guide/l4.jpg" alt="加入曲目、設定是否開放獨奏的畫面" loading="lazy" width="585" height="1170"></li>
+<li class="step"><div class="tx"><span class="no">5</span><h3>按「儲存」</h3><p>儲存後活動就會出現在總表和行事曆，團員可以開始報名。</p></div><img src="guide/l5.jpg" alt="按「儲存」的畫面" loading="lazy" width="585" height="1170"></li>
+<li class="step"><div class="tx"><span class="no">6</span><h3>修改或刪除活動</h3><p>進入活動的詳細內容，按「編輯活動」可以修改，按「刪除」後還要再按一次確認才會刪掉。</p></div><img src="guide/l6.jpg" alt="修改或刪除活動的畫面" loading="lazy" width="585" height="1170"></li>
+<li class="step"><div class="tx"><span class="no">7</span><h3>複製接龍文字</h3><p>按「複製接龍文字」會產生和以前一樣格式的文字，包含目前的參加和請假名單，可以直接貼到 LINE 群組。</p></div><img src="guide/l7.jpg" alt="複製接龍文字的畫面" loading="lazy" width="585" height="1170"></li>
+<li class="step"><div class="tx"><span class="no">8</span><h3>管理團員名單</h3><p>按下方的「團員名單」。輸入姓名按「加入團員」可新增；按「移除」後再按一次確認可移除。</p></div><img src="guide/l8.jpg" alt="管理團員名單的畫面" loading="lazy" width="585" height="1170"></li>
+  </ol>
+
+  <h2 id="tips">小提醒</h2>
+  <div class="tip">
+    <ul>
+      <li>第一次打開要等大約 10 秒才會出現活動，請稍候。</li>
+      <li>按下參加或請假後自己的畫面會馬上變，其他人大約半分鐘後才看得到。</li>
+      <li>iPhone 用 Safari 打開活動簿，按「分享」再按「加入主畫面」，就會像 App 一樣有圖示。</li>
+      <li>畫面顯示「沒有存成功」時，請檢查網路後再按一次。</li>
+    </ul>
+  </div>
+  <p><a href="./">回到活動簿</a></p>
+</div>
+</body>
+</html>
