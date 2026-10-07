@@ -1,0 +1,398 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="樂團活動簿">
+<link rel="apple-touch-icon" href="ic0.png">
+<title>金手獎薩克斯風樂團活動簿</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Chiron+GoRound+TC:wght@400;500;700;900&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&display=swap">
+<style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px)}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
+<script src="config.js"></script>
+<style>
+/* Layout: one narrow column like a sign-up sheet; date stub on the left of each event, roster below. */
+:root{
+  --bg:#fbf3e4; --surface:#fffdf8; --ink:#574334; --muted:#8a7461; --line:#ecdcc4;
+  --brass:#bf5b43; --brass-soft:#fde8a6; --sun-ink:#6b4a16; --hol:#d2452f; --go:#4a8351; --go-soft:#e3f0d9; --leave:#bd533c; --leave-soft:#fbe3da;
+  --bun:#fffaf0; --bun-line:#8a6a52; --bun-in:#f6bfb0;
+  --display:"Chiron GoRound TC","Noto Sans TC","PingFang TC","Microsoft JhengHei",system-ui,sans-serif;
+  --body:"Chiron GoRound TC","Noto Sans TC","PingFang TC","Microsoft JhengHei",system-ui,sans-serif;
+}
+*{box-sizing:border-box}
+body{background:var(--bg) radial-gradient(var(--line) 1.3px,transparent 1.5px) 0 0/22px 22px;color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.6}
+.wrap{max-width:760px;margin:0 auto;padding-inline:16px;padding-block:20px 170px;display:flex;flex-direction:column;gap:16px}
+h1{font-family:var(--display);font-weight:900;font-size:1.6rem;margin:0;letter-spacing:.04em;text-wrap:balance}
+h2{font-family:var(--display);font-weight:900;font-size:1.25rem;margin:0;text-wrap:balance}
+h3{font-size:.8rem;font-weight:700;color:var(--muted);letter-spacing:.12em;margin:0}
+.top{display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between}
+.who{display:flex;gap:8px;align-items:center;font-size:.9rem;color:var(--muted)}
+select,input,textarea{font:inherit;color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:8px 12px;max-width:100%}
+textarea{width:100%;min-height:96px;resize:vertical}
+button{font:inherit;cursor:pointer;border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:999px;padding:8px 16px}
+button:focus-visible,select:focus-visible,input:focus-visible,textarea:focus-visible,a:focus-visible{outline:2px solid var(--brass);outline-offset:2px}
+.primary{background:var(--brass);color:var(--surface);border-color:var(--brass);font-weight:700}
+.link{border:0;border-radius:4px;background:none;padding:4px 0;color:var(--brass);font-weight:500;text-decoration:underline}
+.tabs{display:flex;gap:8px;flex-wrap:wrap}
+.tabs button{border:1px solid var(--line);background:var(--surface);color:var(--muted);font-weight:500}
+.tabs button[aria-selected="true"]{background:var(--brass-soft);border-color:var(--brass-soft);color:var(--sun-ink);font-weight:700}
+.list{display:flex;flex-direction:column;gap:12px}
+.ev{display:grid;grid-template-columns:76px 1fr;background:var(--surface);border:1px solid var(--line);border-radius:18px;overflow:hidden}
+.ev.past{opacity:.72}
+.stub{background:var(--brass-soft);color:var(--sun-ink);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:10px 4px;text-align:center;font-variant-numeric:tabular-nums}
+.stub b{font-family:var(--display);font-size:1.5rem;line-height:1.1}
+.stub span{font-size:.75rem;font-weight:700}
+.evb{padding:12px 14px;min-width:0;display:flex;flex-direction:column;gap:8px}
+.evt{border:0;border-radius:0;background:none;padding:0;text-align:left;font-family:var(--display);font-weight:700;font-size:1.1rem;color:var(--ink)}
+.meta{color:var(--muted);font-size:.875rem;display:flex;flex-wrap:wrap;gap:2px 14px}
+.row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.cnt{font-size:.8rem;font-weight:700;border-radius:99px;padding:2px 10px;font-variant-numeric:tabular-nums}
+.cnt.go{background:var(--go-soft);color:var(--go)} .cnt.lv{background:var(--leave-soft);color:var(--leave)} .cnt.no{border:1px dashed var(--line);color:var(--muted)} .cnt.solo{background:var(--brass-soft);color:var(--sun-ink)}
+.lab{font-size:.85rem;color:var(--muted)} .mem button{padding:4px 10px}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:999px;overflow:hidden}
+.seg button{border:0;border-radius:0;padding:6px 14px;font-size:.9rem}
+.seg button+button{border-left:1px solid var(--line)}
+.seg .on.go{background:var(--go);color:var(--bg);font-weight:700}
+.seg .on.lv{background:var(--leave);color:var(--bg);font-weight:700}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:16px;display:flex;flex-direction:column;gap:14px}
+dl{display:grid;grid-template-columns:auto 1fr;gap:6px 14px;margin:0}
+dt{color:var(--muted);font-size:.875rem;white-space:nowrap} dd{margin:0;min-width:0;overflow-wrap:anywhere}
+ol.songs{margin:0;padding-left:1.6em;columns:2;column-gap:24px} pre{font:inherit;white-space:pre-wrap;margin:0;overflow-wrap:anywhere}
+.mem{display:flex;align-items:center;gap:10px;padding:6px 0;border-top:1px solid var(--line)}
+.mem .n{flex:1;min-width:0} .mem .no{color:var(--muted);font-variant-numeric:tabular-nums;width:1.8em}
+.part{font-size:.75rem;color:var(--muted);margin-left:6px}
+.note{color:var(--muted);font-size:.875rem}
+.warn{background:var(--brass-soft);color:var(--sun-ink);border-radius:14px;padding:10px 14px;font-size:.9rem}
+form.f{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+form.f label{display:flex;flex-direction:column;gap:4px;font-size:.85rem;color:var(--muted);min-width:0}
+form.f .w{grid-column:1/-1} form.f input,form.f select{width:100%}
+.cal{display:grid;grid-template-columns:repeat(7,1fr);gap:1px;background:var(--line);border:1px solid var(--line);border-radius:14px;overflow:hidden}
+.cal div{background:var(--surface);min-height:58px;padding:4px;font-size:.8rem;font-variant-numeric:tabular-nums;min-width:0}
+.cal .hd{min-height:0;text-align:center;color:var(--muted);font-weight:700;padding:6px 0}
+.cal .out{background:var(--bg)} .cal .today{box-shadow:inset 0 0 0 2px var(--brass)}
+.cal .red{color:var(--hol)} .cal small{display:block;font-size:.65rem;line-height:1.2}
+.cal button{display:block;width:100%;border:0;background:var(--brass-soft);color:var(--sun-ink);border-radius:8px;padding:2px 4px;margin-top:2px;font-size:.72rem;font-weight:700;text-align:left;overflow-wrap:anywhere;line-height:1.3}
+@media (max-width:520px){ form.f{grid-template-columns:1fr} ol.songs{columns:1} .ev{grid-template-columns:64px 1fr} }
+.ev,.panel{border-width:2px;border-radius:22px;box-shadow:0 4px 0 var(--line)}
+button,input,select,textarea{border-width:2px}
+.banner{display:block;width:100%;aspect-ratio:5/2;object-fit:cover;object-position:50% 62%;border-radius:22px;border:2px solid var(--line)}
+#addBtn{position:fixed;right:16px;bottom:calc(86px + env(safe-area-inset-bottom,0px));width:58px;height:58px;background:radial-gradient(circle at 35% 30%,#d9664e,#a63d2a);border-color:#8f3423;color:#fffdf8;border-radius:50%;padding:0;font-size:1.9rem;line-height:1;box-shadow:0 4px 12px rgba(0,0,0,.28);z-index:5}
+.hero{display:flex;align-items:center;gap:10px;min-width:0} .hero svg{width:56px;height:56px;flex:none}
+.foot{display:flex;justify-content:center;align-items:flex-end;gap:12px;padding-top:8px} .foot svg{width:36px;height:36px} .foot svg:nth-child(3){width:52px;height:52px}
+.bf{fill:var(--bun);stroke:var(--bun-line);stroke-width:2} .bi{fill:var(--bun-in)} .bl{fill:none;stroke:var(--bun-line);stroke-width:2;stroke-linecap:round} .bn{fill:var(--bun-line)} .bc{fill:var(--bun-in);opacity:.75}
+.hero{justify-content:space-between} .hero h1{min-width:0}
+.hero img{width:104px;flex:none;border-radius:50%;-webkit-mask-image:radial-gradient(ellipse at center,#000 52%,transparent 72%);mask-image:radial-gradient(ellipse at center,#000 52%,transparent 72%)}
+.floor{display:block;width:100%;max-width:460px;margin:8px auto 0;pointer-events:none;-webkit-mask-image:linear-gradient(to bottom,transparent,#000 6%),linear-gradient(to right,transparent,#000 12%,#000 88%,transparent);-webkit-mask-composite:source-in;mask-image:linear-gradient(to bottom,transparent,#000 6%),linear-gradient(to right,transparent,#000 12%,#000 88%,transparent);mask-composite:intersect}
+.panel{outline:2px dashed var(--line);outline-offset:-7px}
+.who input{border-style:dashed;border-color:var(--bun-line);background:var(--surface)}
+.nav{position:fixed;left:0;right:0;bottom:0;display:flex;justify-content:center;gap:4px;background:var(--surface);border-top:2px solid var(--line);padding:6px 8px calc(6px + env(safe-area-inset-bottom,0px));z-index:4}
+.nav button{flex:1;max-width:150px;min-width:0;border:0;background:none;border-radius:16px;padding:5px 2px;display:flex;flex-direction:column;align-items:center;font-size:.75rem;color:var(--muted);white-space:nowrap}
+.nav button span{font-size:1.4rem;line-height:1.25}
+.nav button[aria-selected="true"]{background:var(--brass-soft);color:var(--sun-ink);font-weight:700}
+.hd{position:relative;display:flex;flex-direction:column;gap:6px;margin-bottom:-4px}
+.hd img{position:absolute;right:0;top:-8px;width:68px}
+.hd h1,.hd .who{position:relative;z-index:1} .hd h1{font-size:1.25rem;letter-spacing:.02em}
+.hd .who input{padding:4px 10px}
+.floor{max-width:520px}
+.nav{background:#f7f0dd} .nav button{padding:3px 2px} .nav button img{height:40px;width:auto;display:block}
+.nav button[aria-selected="true"]{background:none;box-shadow:inset 0 -3px 0 var(--brass);border-radius:10px;color:var(--ink)}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><symbol id="bun" viewBox="0 0 64 64">
+<ellipse cx="22" cy="17" rx="7" ry="15" transform="rotate(-12 22 17)" class="bf"/><ellipse cx="42" cy="17" rx="7" ry="15" transform="rotate(12 42 17)" class="bf"/>
+<ellipse cx="22" cy="18" rx="3" ry="9" transform="rotate(-12 22 18)" class="bi"/><ellipse cx="42" cy="18" rx="3" ry="9" transform="rotate(12 42 18)" class="bi"/>
+<ellipse cx="32" cy="43" rx="22" ry="18" class="bf"/><circle cx="18" cy="48" r="3.5" class="bc"/><circle cx="46" cy="48" r="3.5" class="bc"/>
+<path d="M21 42q3 3 6 0M37 42q3 3 6 0M32 49q-2 3-4.5 1.5M32 49q2 3 4.5 1.5" class="bl"/><path d="M30 46h4l-2 3z" class="bn"/></symbol></svg>
+
+<div class="wrap">
+  <header class="hd"><img src="sax.png" alt="" aria-hidden="true"><h1>金手獎薩克斯風樂團活動簿</h1>
+  <label class="who" for="me">🐰 我是 <input id="me" list="meList" placeholder="輸入姓名" autocomplete="off" size="10"><datalist id="meList"></datalist></label></header>
+  <button class="primary" data-act="new" id="addBtn" aria-label="新增活動" title="新增活動">＋</button>
+  <div id="msg" class="warn" hidden></div>
+  <div id="view"><p class="note">正在載入活動⋯ 載入後這裡會列出所有活動，點「參加」或「請假」就完成報名。</p></div>
+  <img class="floor" src="scene.jpg" alt="" aria-hidden="true">
+</div>
+<nav class="nav" role="tablist" aria-label="主要功能">
+  <button data-tab="list" aria-selected="true"><img src="ic0.png" alt="" aria-hidden="true">活動總表</button>
+  <button data-tab="cal" aria-selected="false"><img src="ic1.png" alt="" aria-hidden="true">行事曆</button>
+  <button data-tab="songs" aria-selected="false"><img src="ic2.png" alt="" aria-hidden="true">曲目庫</button>
+  <button data-tab="members" aria-selected="false"><img src="ic3.png" alt="" aria-hidden="true">團員名單</button>
+</nav>
+
+<script>
+(function(){
+const $=s=>document.querySelector(s), view=$('#view'), msg=$('#msg');
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const S={events:{},members:{},rsvps:{},solos:{},unlocked:false,pw:null,tab:'list',detail:null,form:null,month:null,canWrite:true,loaded:false,confirmDel:null,copyText:null};
+let me='';
+const API=window.API_URL||'';
+async function api(body){
+  const r=await fetch(API,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(body),redirect:'follow'});
+  const j=await r.json(); if(!j.ok) throw {code:j.error||'unavailable'}; return j;
+}
+let pending=0;
+async function write(op,col,id,data){
+  if(op==='set') S[col][id]={...data,id}; else if(op==='update'&&S[col][id]) S[col][id]={...S[col][id],...data}; else if(op==='delete') delete S[col][id];
+  render(); pending++;
+  try{await api({op,col,id,data,pw:S.pwVal||''})}catch(e){pending--;await load();throw e}
+  pending--;
+}
+const newId=c=>c[0]+Date.now().toString(36)+Math.random().toString(36).slice(2,6);
+const db={doc(path){const [col,id]=path.split('/');return {id,set:d=>write('set',col,id,d),update:d=>write('update',col,id,d),delete:()=>write('delete',col,id)}},
+  collection(col){return {doc(id){return db.doc(col+'/'+(id||newId(col)))},add(d){const r=this.doc();return r.set(d).then(()=>r)}}}};
+function purge(f,v){for(const c of ['rsvps','solos'])for(const k of Object.keys(S[c]))if(S[c][k][f]===v)delete S[c][k]}
+async function load(){
+  try{const j=await api({op:'all'}); if(pending) return;
+    for(const c of ['events','members','rsvps','solos']){const o={};(j.data[c]||[]).forEach(x=>o[x.id]=x);S[c]=o}
+    S.loaded=true; render();
+  }catch(e){if(!S.loaded){S.loaded=true;view.innerHTML='<p class="note">連不上資料，請檢查網路後重新整理。</p>'}}
+}
+try{me=localStorage.getItem('sax-me')||''}catch(e){}
+const WD='日一二三四五六';
+const pad=n=>String(n).padStart(2,'0');
+const todayStr=()=>{const d=new Date();return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate())};
+const parse=s=>{const [y,m,d]=s.split('-').map(Number);return new Date(y,m-1,d)};
+const roc=s=>{const [y,m,d]=s.split('-');return (y-1911)+'.'+m+'.'+d};
+const timeStr=e=>e.start?(e.end?e.start+'～'+e.end:e.start):'';
+
+function evList(){return Object.values(S.events).sort((a,b)=>(a.date+(a.start||'')).localeCompare(b.date+(b.start||'')))}
+function memList(){return Object.values(S.members).sort((a,b)=>(a.order||0)-(b.order||0)||a.name.localeCompare(b.name,'zh-Hant'))}
+function tally(eid){
+  const go=[],lv=[],no=[];
+  for(const m of memList()){const r=S.rsvps[eid+'_'+m.id]; if(!r) no.push(m); else (r.status==='go'?go:lv).push({m,r});}
+  const byAt=(a,b)=>(a.r.at||0)-(b.r.at||0); go.sort(byAt); lv.sort(byAt);
+  const guests=go.reduce((n,x)=>n+(x.r.companions||0),0);
+  return {go,lv,no,guests};
+}
+function seg(eid,mid){
+  const r=S.rsvps[eid+'_'+mid], st=r&&r.status, dis=S.canWrite?'':' disabled';
+  return `<span class="seg"><button class="${st==='go'?'on go':''}" data-act="rsvp" data-e="${eid}" data-m="${mid}" data-s="go"${dis}>參加</button><button class="${st==='leave'?'on lv':''}" data-act="rsvp" data-e="${eid}" data-m="${mid}" data-s="leave"${dis}>請假</button></span>`;
+}
+function card(e){
+  const t=tally(e.id), d=parse(e.date), past=e.date<todayStr();
+  return `<article class="ev${past?' past':''}">
+    <div class="stub"><span>${d.getFullYear()-1911} 年</span><b>${d.getMonth()+1}/${d.getDate()}</b><span>週${WD[d.getDay()]}</span></div>
+    <div class="evb">
+      <button class="evt" data-act="open" data-e="${e.id}">${esc(e.title)}</button>
+      <div class="meta"><span>${esc(timeStr(e))}${e.gather?'（'+esc(e.gather)+' 集合）':''}</span><span>${esc(e.place)}</span><span>${esc(e.unit)}</span></div>
+      <div class="row"><span class="cnt go">參加 ${t.go.length}${t.guests?'＋伴 '+t.guests:''}</span><span class="cnt lv">請假 ${t.lv.length}</span><span class="cnt no">未回覆 ${t.no.length}</span>${e.allowSolo?'<span class="cnt solo">開放獨奏報名</span>':''}</div>
+      <div class="row">${me&&S.members[me]?seg(e.id,me):'<span class="note">先在上方「我是」輸入姓名，再報名</span>'}<button class="link" data-act="open" data-e="${e.id}">看名單與曲目</button></div>
+    </div></article>`;
+}
+function vList(){
+  const t=todayStr(), all=evList(), up=all.filter(e=>e.date>=t), past=all.filter(e=>e.date<t).reverse();
+  if(!all.length) return `<p class="note">還沒有活動。按「新增活動」建立第一場，團員就能在這裡報名參加或請假。</p>`;
+  return `<div class="list"><h3>🥕 即將到來</h3>${up.map(card).join('')||'<p class="note">目前沒有即將到來的活動。</p>'}
+    ${past.length?'<h3>已結束</h3>'+past.map(card).join(''):''}</div>`;
+}
+function vDetail(e){
+  const t=tally(e.id), d=parse(e.date);
+  const row=(x,i,m)=>{const mm=m||x.m, r=x&&x.r;
+    return `<div class="mem"><span class="no">${i!=null?pad(i+1)+'.':''}</span><span class="n">${esc(mm.name)}${mm.part?`<span class="part">${esc(mm.part)}</span>`:''}${r&&r.companions?`<span class="part">攜伴 ${r.companions}</span>`:''}${r&&r.note?`<span class="part">${esc(r.note)}</span>`:''}</span>${seg(e.id,mm.id)}</div>`};
+  const myR=me&&S.rsvps[e.id+'_'+me];
+  const solos=Object.values(S.solos).filter(x=>x.eventId===e.id).sort((a,b)=>(a.at||0)-(b.at||0));
+  return `<div class="list"><div><button class="link" data-act="back">← 回到上一頁</button></div>
+  <section class="panel">
+    <div><h3>${roc(e.date)}　週${WD[d.getDay()]}</h3><h2>${esc(e.title)}</h2></div>
+    <dl>
+      <dt>邀請單位</dt><dd>${esc(e.unit)||'—'}</dd>
+      <dt>邀請人</dt><dd>${esc(e.inviter)||'—'}</dd>
+      <dt>時間</dt><dd>${esc(timeStr(e))||'—'}</dd>
+      <dt>集合時間</dt><dd>${esc(e.gather)||'—'}</dd>
+      <dt>地點</dt><dd>${esc(e.place)||'—'}</dd>
+      <dt>攜伴</dt><dd>${e.companion?'可以':'不可'}</dd>
+      <dt>服裝</dt><dd>${e.dressF&&e.dressF===e.dressM?esc(e.dressF):[e.dressF&&'💃 女生：'+esc(e.dressF),e.dressM&&'🕺 男生：'+esc(e.dressM)].filter(Boolean).join('<br>')||'—'}</dd>
+      ${e.note?`<dt>備註</dt><dd><pre>${esc(e.note)}</pre></dd>`:''}
+    </dl>
+    ${S.canWrite?`<div class="row"><button data-act="copy" data-e="${e.id}">複製接龍文字</button><button data-act="edit" data-e="${e.id}">編輯活動</button>${S.confirmDel===e.id?`<button data-act="del" data-e="${e.id}" style="color:var(--leave);border-color:var(--leave)">確定刪除這場活動</button><button data-act="nodel">取消</button>`:`<button data-act="askdelev" data-e="${e.id}">刪除</button>`}</div>`:`<div class="row"><button data-act="copy" data-e="${e.id}">複製接龍文字</button></div>`}
+    ${S.copyText?`<div><p class="note">無法自動複製，請長按下方文字全選後複製。</p><textarea id="copyBox" readonly>${esc(S.copyText)}</textarea></div>`:''}
+  </section>
+  ${(e.songs||[]).length?`<section class="panel"><h3>🎵 團奏曲目${e.songNote?'　'+esc(e.songNote):''}</h3><ol class="songs">${e.songs.map(s=>`<li>${esc(s)}</li>`).join('')}</ol></section>`:''}
+  ${e.allowSolo||solos.length?`<section class="panel"><h3>🎤 個人獨奏／重奏節目表</h3>
+    <div>${solos.map((x,i)=>`<div class="mem"><span class="no">${pad(i+1)}.</span><span class="n">${esc(x.performers)}${x.title?' － '+esc(x.title):''}</span>${S.canWrite?(S.confirmDel==='solo:'+x.id?`<button data-act="solodel" data-id="${x.id}" style="color:var(--leave)">確定移除</button><button data-act="nodel">取消</button>`:`<button data-act="solomv" data-i="${i}" data-d="-1" aria-label="上移"${i?'':' disabled'}>↑</button><button data-act="solomv" data-i="${i}" data-d="1" aria-label="下移"${i<solos.length-1?'':' disabled'}>↓</button><button class="link" data-act="soloask" data-id="${x.id}">移除</button>`):''}</div>`).join('')||'<p class="note">還沒有人報名獨奏或重奏。</p>'}</div>
+    ${e.allowSolo&&S.canWrite?`<form class="row" id="soloForm" data-e="${e.id}"><input id="s_who" aria-label="表演者" placeholder="表演者（重奏請寫全部的人）" value="${esc(me&&S.members[me]?S.members[me].name:'')}" required><input id="s_title" aria-label="曲目" placeholder="曲目" required><button class="primary" type="submit">新增我的曲目</button></form><p class="note">這場開放獨奏／重奏，想上台的團員請在這裡加上自己的曲目。調整順序需要管理密碼。</p>`:''}
+  </section>`:''}
+  <section class="panel">
+    ${myR&&myR.status==='go'&&e.companion&&S.canWrite?`<div class="row"><label for="comp">我的攜伴人數</label><select id="comp" data-e="${e.id}">${[0,1,2,3,4].map(n=>`<option${(myR.companions||0)===n?' selected':''}>${n}</option>`).join('')}</select></div>`:''}
+    <h3>✅ 參加　${t.go.length} 人${t.guests?'，攜伴 '+t.guests+' 人':''}</h3><div>${t.go.map((x,i)=>row(x,i)).join('')||'<p class="note">還沒有人報名。</p>'}</div>
+    <h3>🙏 請假　${t.lv.length} 人</h3><div>${t.lv.map((x,i)=>row(x,i)).join('')||'<p class="note">沒有人請假。</p>'}</div>
+    <h3>⏳ 未回覆　${t.no.length} 人</h3><div>${t.no.map(m=>row(null,null,m)).join('')||'<p class="note">全員都回覆了。</p>'}</div>
+    <p class="note">可以幫其他團員代為登記。再按一次同一個按鈕會取消登記。</p>
+  </section></div>`;
+}
+function songEd(){
+  const a=S.form.songs||[];
+  return a.map((x,i)=>`<div class="mem"><span class="no">${pad(i+1)}.</span><span class="n">${esc(x)}</span><button type="button" data-act="sup" data-i="${i}" aria-label="上移"${i?'':' disabled'}>↑</button><button type="button" data-act="sdn" data-i="${i}" aria-label="下移"${i<a.length-1?'':' disabled'}>↓</button><button type="button" data-act="sdel" data-i="${i}" aria-label="刪除">✕</button></div>`).join('')
+    +`<div class="row" style="margin-top:8px"><input id="f_song" list="songList" aria-label="曲名" placeholder="輸入曲名（演過的會自動提示）"><datalist id="songList">${[...new Set(evList().flatMap(e=>e.songs||[]))].map(x=>`<option value="${esc(x)}"></option>`).join('')}</datalist><button type="button" data-act="sadd">加入曲目</button></div>`;
+}
+function vPw(){
+  return `<section class="panel"><h2>請輸入管理密碼</h2><p class="note">新增、編輯、刪除活動需要密碼。</p>
+    <form class="row" id="pwForm"><input id="pw" type="password" inputmode="numeric" autocomplete="off" aria-label="密碼" required><button class="primary" type="submit">確認</button><button type="button" data-act="back">取消</button></form></section>`;
+}
+function vForm(e){
+  const v=k=>esc(e[k]||'');
+  return `<section class="panel"><h2>${e.id?'編輯活動':'新增活動'}</h2>
+  <form class="f" id="evForm">
+    <label class="w">活動內容<input id="f_title" required value="${v('title')}" placeholder="例：低碳宣導活動"></label>
+    <label>邀請單位<input id="f_unit" value="${v('unit')}"></label>
+    <label>邀請人<input id="f_inviter" value="${v('inviter')}"></label>
+    <label>日期<input id="f_date" type="date" required value="${v('date')}"></label>
+    <label>集合時間<input id="f_gather" value="${v('gather')}" placeholder="例：14:40"></label>
+    <label>開始時間<input id="f_start" type="time" value="${v('start')}"></label>
+    <label>結束時間<input id="f_end" type="time" value="${v('end')}"></label>
+    <label class="w">地點<input id="f_place" value="${v('place')}"></label>
+    <label>攜伴<select id="f_companion"><option value="0">不可</option><option value="1"${e.companion?' selected':''}>可以</option></select></label>
+    <label>曲目說明<input id="f_songNote" value="${v('songNote')}" placeholder="例：團奏（請團員帶譜）"></label>
+    <label>女生服裝<input id="f_dressF" value="${v('dressF')}"></label>
+    <label>男生服裝<input id="f_dressM" value="${v('dressM')}"></label>
+    <label class="w">開放團員新增獨奏／重奏曲目<select id="f_allowSolo"><option value="0">不開放</option><option value="1"${e.allowSolo?' selected':''}>開放</option></select></label>
+    <div class="w"><span class="lab">團奏曲目（用箭頭調整順序，編號會自動重排）</span><div id="songEd">${songEd()}</div></div>
+    <label class="w">備註<textarea id="f_note">${v('note')}</textarea></label>
+    <div class="row w"><button class="primary" type="submit">儲存</button><button type="button" data-act="back">取消</button></div>
+  </form></section>`;
+}
+const HD={'2026-01-01':'元旦','2026-02-15':'小年夜','2026-02-16':'除夕','2026-02-17':'春節','2026-02-18':'春節','2026-02-19':'春節','2026-02-20':'補假','2026-02-27':'補假','2026-02-28':'和平紀念日','2026-04-03':'補假','2026-04-04':'兒童節','2026-04-05':'清明節','2026-04-06':'補假','2026-05-01':'勞動節','2026-06-19':'端午節','2026-09-25':'中秋節','2026-09-28':'教師節','2026-10-09':'補假','2026-10-10':'國慶日','2026-10-25':'光復節','2026-10-26':'補假','2026-12-25':'行憲紀念日',
+'2027-01-01':'元旦','2027-02-04':'小年夜','2027-02-05':'除夕','2027-02-06':'春節','2027-02-07':'春節','2027-02-08':'春節','2027-02-09':'補假','2027-02-10':'補假','2027-02-28':'和平紀念日','2027-03-01':'補假','2027-04-04':'兒童節','2027-04-05':'清明節','2027-04-06':'補假','2027-04-30':'補假','2027-05-01':'勞動節','2027-06-09':'端午節','2027-09-15':'中秋節','2027-09-28':'教師節','2027-10-10':'國慶日','2027-10-11':'補假','2027-10-25':'光復節','2027-12-24':'補假','2027-12-25':'行憲紀念日','2027-12-31':'補假'};
+function vCal(){
+  if(!S.month){const d=new Date();S.month=[d.getFullYear(),d.getMonth()]}
+  const [y,m]=S.month, first=new Date(y,m,1), start=first.getDay(), days=new Date(y,m+1,0).getDate(), t=todayStr();
+  const key=d=>y+'-'+pad(m+1)+'-'+pad(d), evs=evList().filter(e=>e.date.startsWith(y+'-'+pad(m+1)));
+  let cells=[...WD].map((w,i)=>`<div class="hd${i%6?'':' red'}">${w}</div>`).join('');
+  for(let i=0;i<start;i++) cells+='<div class="out"></div>';
+  for(let d=1;d<=days;d++){const k=key(d);
+    const dow=(start+d-1)%7, hol=HD[k], de=evs.filter(e=>e.date===k);
+    cells+=`<div class="${k===t?'today':''}"><span class="${hol||dow%6===0?'red':''}">${d}${hol?`<small>${hol}</small>`:''}</span>${de.length===1?`<button data-act="open" data-e="${de[0].id}">演出</button>`:de.length?`<button data-act="calday" data-e="${k}">演出×${de.length}</button>`:''}</div>`}
+  const tail=(7-(start+days)%7)%7; for(let i=0;i<tail;i++) cells+='<div class="out"></div>';
+  return `<div class="list"><div class="row" style="justify-content:space-between"><button data-act="mon" data-d="-1" aria-label="上個月">←</button><h2>${y-1911} 年 ${m+1} 月</h2><button data-act="mon" data-d="1" aria-label="下個月">→</button></div>
+    <div class="cal">${cells}</div>${S.calDay&&evs.some(e=>e.date===S.calDay)?`<h3>${roc(S.calDay)} 當天的演出</h3>`+evs.filter(e=>e.date===S.calDay).map(card).join('')+'<div><button class="link" data-act="calday" data-e="">看整個月</button></div>':evs.map(card).join('')||'<p class="note">這個月沒有活動。</p>'}</div>`;
+}
+function vSongs(){
+  const t=todayStr(), m={};
+  for(const e of evList()) for(const x of (e.songs||[])){const o=m[x]||(m[x]={n:0,last:'',next:''}); if(e.date<t){o.n++;o.last=e.date}else if(!o.next)o.next=e.date}
+  const rows=Object.entries(m).sort((a,b)=>b[1].n-a[1].n||a[0].localeCompare(b[0],'zh-Hant'));
+  const so=Object.values(S.solos).filter(x=>S.events[x.eventId]).sort((a,b)=>S.events[b.eventId].date.localeCompare(S.events[a.eventId].date)||(a.at||0)-(b.at||0));
+  return `<div class="list"><section class="panel"><h2>團奏曲目　${rows.length} 首</h2><p class="note">自動從每場活動的曲目整理，不用另外登記。</p>
+    <div>${rows.map(([k,o])=>`<div class="mem"><span class="n">${esc(k)}</span><span class="part">${o.n?'演出 '+o.n+' 次・最近 '+roc(o.last):'尚未演出'}${o.next?'・預定 '+roc(o.next):''}</span></div>`).join('')||'<p class="note">活動裡加了曲目，這裡就會出現。</p>'}</div></section>
+    ${so.length?`<section class="panel"><h2>獨奏／重奏紀錄</h2><div>${so.map(x=>`<div class="mem"><span class="n">${esc(x.title)}<span class="part">${esc(x.performers)}</span></span><span class="part">${roc(S.events[x.eventId].date)}</span></div>`).join('')}</div></section>`:''}</div>`;
+}
+function vMembers(){
+  return `<section class="panel"><h2>團員名單　${memList().length} 人</h2>
+    ${S.canWrite?`<form class="row" id="memForm"><input id="m_name" placeholder="姓名" required aria-label="姓名"><button class="primary" type="submit">加入團員</button></form>`:''}
+    <div>${memList().map(m=>`<div class="mem"><span class="n">${esc(m.name)}${m.part?`<span class="part">${esc(m.part)}</span>`:''}</span>${S.canWrite?(S.confirmDel===m.id?`<button data-act="delmem" data-m="${m.id}" style="color:var(--leave)">確定移除</button><button data-act="nodel">取消</button>`:`<button class="link" data-act="askdel" data-e="${m.id}">移除</button>`):''}</div>`).join('')||'<p class="note">還沒有團員。先把團員姓名加進來，大家才能選自己的名字報名。</p>'}</div></section>`;
+}
+function render(force){
+  const ae=document.activeElement;
+  if(!force && ae && view.contains(ae) && /INPUT|TEXTAREA|SELECT/.test(ae.tagName)) return;
+  $('#meList').innerHTML=memList().map(m=>`<option value="${esc(m.name)}"></option>`).join('');
+  const inp=$('#me'); if(document.activeElement!==inp&&me&&S.members[me]) inp.value=S.members[me].name;
+  $('.floor').src=S.tab==='list'?'scene.jpg':'duo.jpg';
+  $('#addBtn').hidden=!S.canWrite||!!S.form||!!S.pw;
+  document.querySelectorAll('[data-tab]').forEach(b=>b.setAttribute('aria-selected',String(b.dataset.tab===S.tab&&!S.detail&&!S.form&&!S.pw)));
+  if(!S.loaded) return;
+  if(S.pw) view.innerHTML=vPw();
+  else if(S.form) view.innerHTML=vForm(S.form);
+  else if(S.detail&&S.events[S.detail]) view.innerHTML=vDetail(S.events[S.detail]);
+  else {S.detail=null; view.innerHTML=S.tab==='cal'?vCal():S.tab==='songs'?vSongs():S.tab==='members'?vMembers():vList();}
+}
+function fail(e){
+  if(e&&e.code==='bad_pw'){S.unlocked=false;S.pwVal='';say('管理密碼不正確，請重新輸入。')}
+  else say('沒有存成功，請檢查網路後再試一次。');
+}
+function say(t){msg.textContent=t;msg.hidden=!t}
+const busy=new Set();
+async function rsvp(eid,mid,status,companions){
+  if(!db||busy.has(eid+mid)) return; busy.add(eid+mid);
+  const id=eid+'_'+mid, cur=S.rsvps[id], ref=db.doc('rsvps/'+id);
+  try{
+    if(cur&&cur.status===status&&companions==null) await ref.delete();
+    else await ref.set({eventId:eid,memberId:mid,status,companions:status==='go'?(companions??(cur&&cur.status==='go'?cur.companions||0:0)):0,at:cur&&cur.status===status?cur.at:Date.now()});
+    say('');
+  }catch(e){fail(e)} busy.delete(eid+mid);
+}
+function chainText(e){
+  const t=tally(e.id), L=[];
+  L.push('✅邀請單位：'+(e.unit||''),'✅活動內容：'+e.title,'✅邀請人：'+(e.inviter||''),'✅日期：'+roc(e.date),'✅時間：'+timeStr(e),'✅集合時間：'+(e.gather||''),'✅地點：'+(e.place||''),'✅攜伴：'+(e.companion?'⭕':'❌'),'✅服裝：','💃女生：'+(e.dressF||''),'🕺男生：'+(e.dressM||''),'✅曲目： '+(e.songNote||''));
+  (e.songs||[]).forEach((s,i)=>L.push(pad(i+1)+'. '+s));
+  L.push('----------------------------------','✅可以參加的團員：');
+  t.go.forEach((x,i)=>L.push(pad(i+1)+'. '+x.m.name+(x.r.companions?'（攜伴'+x.r.companions+'）':'')));
+  L.push('','請假：'); t.lv.forEach((x,i)=>L.push(pad(i+1)+'. '+x.m.name));
+  if(t.no.length) L.push('','尚未回覆：'+t.no.map(m=>m.name).join('、'));
+  const so=Object.values(S.solos).filter(x=>x.eventId===e.id).sort((a,b)=>(a.at||0)-(b.at||0));
+  if(so.length){const k=L.indexOf('----------------------------------');const add=['------------------------------------------------','個人獨奏/重奏表演節目表',...so.map((x,i)=>pad(i+1)+'. '+x.performers+(x.title?'－'+x.title:''))];L.splice(k,0,...add)}
+  if(e.note) L.push('','📌'+e.note);
+  return L.join('\n');
+}
+document.addEventListener('click',async ev=>{
+  const tb=ev.target.closest('[data-tab]'); if(tb){S.tab=tb.dataset.tab;S.detail=S.form=S.confirmDel=S.copyText=S.pw=null;render(true);return}
+  const b=ev.target.closest('[data-act]'); if(!b) return; const a=b.dataset.act, e=b.dataset.e;
+  if(a==='open'){S.detail=e;S.copyText=null;render(true);scrollTo(0,0)}
+  else if(a==='back'){if(S.pw){S.pw=null}else if(S.form){S.form=null}else S.detail=null;S.copyText=S.confirmDel=null;render(true)}
+  else if(a==='new'){gate(()=>{S.form={date:todayStr(),companion:false,songs:[]};render(true)})}
+  else if(a==='edit'){gate(()=>{S.form={...S.events[e],songs:[...(S.events[e].songs||[])]};render(true)})}
+  else if(a==='askdelev'){gate(()=>{S.confirmDel=e;render(true)})}
+  else if(a==='soloask'){S.confirmDel='solo:'+b.dataset.id;render(true)}
+  else if(a==='solodel'){try{await db.doc('solos/'+b.dataset.id).delete();S.confirmDel=null;render(true)}catch(x){fail(x)}}
+  else if(a==='solomv'){const i=Number(b.dataset.i),j=i+Number(b.dataset.d),eid=S.detail;gate(async()=>{
+    render(true);const L=Object.values(S.solos).filter(x=>x.eventId===eid).sort((p,q)=>(p.at||0)-(q.at||0));const A=L[i],B=L[j];if(!A||!B)return;
+    try{const ta=A.at||0,tb=B.at||0;await db.doc('solos/'+A.id).update({at:tb===ta?tb+(j>i?1:-1):tb});await db.doc('solos/'+B.id).update({at:ta})}catch(x){fail(x)}})}
+  else if(a==='sadd'||a==='sup'||a==='sdn'||a==='sdel'){const L=S.form.songs||(S.form.songs=[]),i=Number(b.dataset.i);
+    if(a==='sadd'){const v=$('#f_song').value.trim();if(v)L.push(v)}
+    else if(a==='sdel')L.splice(i,1);
+    else{const j=a==='sup'?i-1:i+1;if(j>=0&&j<L.length)[L[i],L[j]]=[L[j],L[i]]}
+    $('#songEd').innerHTML=songEd();if(a==='sadd')$('#f_song').focus()}
+  else if(a==='rsvp'){rsvp(e,b.dataset.m,b.dataset.s)}
+  else if(a==='calday'){S.calDay=e||null;render(true)}
+  else if(a==='mon'){S.calDay=null;let [y,m]=S.month;m+=Number(b.dataset.d);S.month=[y+Math.floor(m/12),(m%12+12)%12];render(true)}
+  else if(a==='askdel'){S.confirmDel=e;render(true)}
+  else if(a==='nodel'){S.confirmDel=null;render(true)}
+  else if(a==='del'){try{await db.doc('events/'+e).delete();purge('eventId',e);S.detail=S.confirmDel=null;render(true)}catch(x){fail(x)}}
+  else if(a==='delmem'){const m=b.dataset.m;try{await db.doc('members/'+m).delete();purge('memberId',m);S.confirmDel=null;render(true)}catch(x){fail(x)}}
+  else if(a==='copy'){const t=chainText(S.events[e]);try{await navigator.clipboard.writeText(t);say('已複製，可以貼到 LINE 群組。')}catch(x){S.copyText=t;render(true);const c=$('#copyBox');if(c){c.focus();c.select()}}}
+});
+function gate(fn){if(S.unlocked)fn();else{S.pw=fn;render(true);const p=$('#pw');if(p)p.focus()}}
+document.addEventListener('input',ev=>{
+  if(ev.target.id!=='me') return; const v=ev.target.value.trim(), m=memList().find(x=>x.name===v), id=m?m.id:'';
+  if(id===me) return; me=id; try{localStorage.setItem('sax-me',me)}catch(e){} render();
+});
+document.addEventListener('keydown',ev=>{if(ev.key==='Enter'&&ev.target.id==='f_song'){ev.preventDefault();const b=document.querySelector('[data-act="sadd"]');if(b)b.click()}});
+document.addEventListener('change',ev=>{
+
+  if(ev.target.id==='comp'){const eid=ev.target.dataset.e;ev.target.blur();rsvp(eid,me,'go',Number(ev.target.value))}
+});
+document.addEventListener('submit',async ev=>{
+  ev.preventDefault(); if(!db) return;
+  const g=id=>$('#'+id).value.trim();
+  if(ev.target.id==='pwForm'){
+    const v=$('#pw').value;try{await api({op:'pw',pw:v});S.unlocked=true;S.pwVal=v;const f=S.pw;S.pw=null;say('');f()}catch(x){say(x.code==='bad_pw'?'密碼不正確。':'連不上資料，請再試一次。');$('#pw').value=''}
+    return}
+  if(ev.target.id==='soloForm'){
+    const who=g('s_who'),title=g('s_title'); if(!who||!title) return;
+    try{await db.collection('solos').add({eventId:ev.target.dataset.e,by:me||'',performers:who,title,at:Date.now()});say('');render(true)}catch(x){fail(x)}
+    return}
+  if(ev.target.id==='evForm'){
+    const pend=g('f_song'); if(pend)(S.form.songs||(S.form.songs=[])).push(pend);
+    const data={title:g('f_title'),unit:g('f_unit'),inviter:g('f_inviter'),date:g('f_date'),gather:g('f_gather'),start:g('f_start'),end:g('f_end'),place:g('f_place'),companion:g('f_companion')==='1',songNote:g('f_songNote'),dressF:g('f_dressF'),dressM:g('f_dressM'),songs:S.form.songs||[],allowSolo:g('f_allowSolo')==='1',note:g('f_note')};
+    if(!data.title||!data.date) return;
+    try{const ref=S.form.id?db.doc('events/'+S.form.id):db.collection('events').doc();await ref.set(data);S.form=null;S.detail=ref.id;say('');render(true)}catch(x){fail(x)}
+  }
+  if(ev.target.id==='memForm'){
+    const name=g('m_name'); if(!name) return;
+    if(memList().some(m=>m.name===name)){say('名單裡已經有「'+name+'」。');return}
+    try{await db.collection('members').add({name,order:Date.now()});say('');$('#m_name').value='';render(true)}catch(x){fail(x)}
+  }
+});
+async function boot(){
+  render(true);
+  if(!API){S.loaded=true;view.innerHTML='<p class="note">尚未設定資料來源。</p>';return}
+  await load();
+  setInterval(()=>{if(!document.hidden&&!pending)load()},20000);
+  document.addEventListener('visibilitychange',()=>{if(!document.hidden&&!pending)load()});
+}
+boot();
+})();
+</script>
+
+</body>
+</html>
