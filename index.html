@@ -92,6 +92,7 @@ button,input,select,textarea{border-width:2px}
 .nav button{flex:1;max-width:150px;min-width:0;border:0;background:none;border-radius:16px;padding:5px 2px;display:flex;flex-direction:column;align-items:center;font-size:.75rem;color:var(--muted);white-space:nowrap}
 .nav button span{font-size:1.4rem;line-height:1.25}
 .nav button[aria-selected="true"]{background:var(--brass-soft);color:var(--sun-ink);font-weight:700}
+.paste{background:var(--brass-soft);border-radius:16px;padding:12px;display:flex;flex-direction:column;gap:8px;color:var(--sun-ink)} .paste textarea{min-height:120px}
 .hd{position:relative;display:flex;flex-direction:column;gap:6px;margin-bottom:-4px}
 .hd img{position:absolute;right:0;top:-8px;width:68px}
 .hd h1,.hd .who{position:relative;z-index:1} .hd h1{font-size:1.25rem;letter-spacing:.02em}
@@ -239,6 +240,7 @@ function vForm(e){
   const v=k=>esc(e[k]||'');
   return `<section class="panel"><h2>${e.id?'編輯活動':'新增活動'}</h2>
   <form class="f" id="evForm">
+    <div class="w paste"><label for="f_paste">貼上接龍文字，自動填入下面的欄位（可略過）</label><textarea id="f_paste" placeholder="把 LINE 上的活動公告整段貼在這裡，例如：&#10;✅邀請單位：台中市經發局&#10;✅活動內容：低碳宣導活動&#10;✅日期：115.10.17 …"></textarea><div class="row"><button type="button" class="primary" data-act="parse">自動填入</button><button type="button" data-act="clearform">清空重填</button></div></div>
     <label class="w">活動內容<input id="f_title" required value="${v('title')}" placeholder="例：低碳宣導活動"></label>
     <label>邀請單位<input id="f_unit" value="${v('unit')}"></label>
     <label>邀請人<input id="f_inviter" value="${v('inviter')}"></label>
@@ -289,6 +291,7 @@ function vMembers(){
 function render(force){
   const ae=document.activeElement;
   if(!force && ae && view.contains(ae) && /INPUT|TEXTAREA|SELECT/.test(ae.tagName)) return;
+  if(!force && (S.form||S.pw)) return;
   $('#meList').innerHTML=memList().map(m=>`<option value="${esc(m.name)}"></option>`).join('');
   const inp=$('#me'); if(document.activeElement!==inp&&me&&S.members[me]) inp.value=S.members[me].name;
   $('.floor').src=S.tab==='list'?'scene.jpg':'duo.jpg';
@@ -333,7 +336,9 @@ document.addEventListener('click',async ev=>{
   const b=ev.target.closest('[data-act]'); if(!b) return; const a=b.dataset.act, e=b.dataset.e;
   if(a==='open'){S.detail=e;S.copyText=null;render(true);scrollTo(0,0)}
   else if(a==='back'){if(S.pw){S.pw=null}else if(S.form){S.form=null}else S.detail=null;S.copyText=S.confirmDel=null;render(true)}
-  else if(a==='new'){gate(()=>{S.form={date:todayStr(),companion:false,songs:[]};render(true)})}
+  else if(a==='new'){gate(()=>{let d=null;try{d=JSON.parse(localStorage.getItem('sax-draft')||'null')}catch(e){}S.form=d||{date:todayStr(),companion:false,songs:[]};render(true);if(d)say('已恢復上次未儲存的草稿。不需要的話按「清空重填」。')})}
+  else if(a==='parse'){parseInto($('#f_paste').value)}
+  else if(a==='clearform'){try{localStorage.removeItem('sax-draft')}catch(e){}S.form={...(S.form.id?{id:S.form.id}:{}),date:todayStr(),companion:false,songs:[]};render(true);say('')}
   else if(a==='edit'){gate(()=>{S.form={...S.events[e],songs:[...(S.events[e].songs||[])]};render(true)})}
   else if(a==='askdelev'){gate(()=>{S.confirmDel=e;render(true)})}
   else if(a==='soloask'){S.confirmDel='solo:'+b.dataset.id;render(true)}
@@ -355,6 +360,55 @@ document.addEventListener('click',async ev=>{
   else if(a==='delmem'){const m=b.dataset.m;try{await db.doc('members/'+m).delete();purge('memberId',m);S.confirmDel=null;render(true)}catch(x){fail(x)}}
   else if(a==='copy'){const t=chainText(S.events[e]);try{await navigator.clipboard.writeText(t);say('已複製，可以貼到 LINE 群組。')}catch(x){S.copyText=t;render(true);const c=$('#copyBox');if(c){c.focus();c.select()}}}
 });
+function formData(){const g=id=>{const el=$('#'+id);return el?el.value.trim():''};
+  return {...(S.form&&S.form.id?{id:S.form.id}:{}),title:g('f_title'),unit:g('f_unit'),inviter:g('f_inviter'),date:g('f_date'),gather:g('f_gather'),start:g('f_start'),end:g('f_end'),place:g('f_place'),companion:g('f_companion')==='1',songNote:g('f_songNote'),dressF:g('f_dressF'),dressM:g('f_dressM'),songs:(S.form&&S.form.songs)||[],allowSolo:g('f_allowSolo')==='1',note:g('f_note')}}
+let draftT=null;
+function saveDraft(){if(!S.form||S.form.id)return;clearTimeout(draftT);draftT=setTimeout(()=>{try{localStorage.setItem('sax-draft',JSON.stringify(formData()))}catch(e){}},400)}
+document.addEventListener('input',e=>{if(e.target.closest&&e.target.closest('#evForm')&&e.target.id!=='f_paste')saveDraft()});
+document.addEventListener('change',e=>{if(e.target.closest&&e.target.closest('#evForm'))saveDraft()});
+function hhmm(t){const m=t.match(/(\d{1,2}):(\d{2})/);return m?pad(+m[1])+':'+m[2]:''}
+function parseDate(v){let m=v.match(/(\d{2,4})\s*[.\/\-年]\s*(\d{1,2})\s*[.\/\-月]\s*(\d{1,2})/);
+  if(m){let y=+m[1];if(y<1911)y+=1911;return y+'-'+pad(+m[2])+'-'+pad(+m[3])}
+  m=v.match(/(\d{1,2})\s*[\/.月]\s*(\d{1,2})/);if(!m)return '';
+  const d=new Date();let y=d.getFullYear();const s=y+'-'+pad(+m[1])+'-'+pad(+m[2]);
+  return (parse(s)<new Date(d.getFullYear(),d.getMonth()-2,d.getDate()))?(y+1)+s.slice(4):s}
+function parseInto(txt){
+  if(!txt.trim()){say('請先把接龍文字貼到框框裡。');return}
+  const o={},songs=[],notes=[];let inSongs=false,inDress=false,solo=false,found=0;
+  const lines=txt.replace(/\r/g,'').replace(/：/g,':').replace(/～/g,'~').split('\n');
+  for(let raw of lines){
+    const line=raw.replace(/^[\s✅☑✔️⭐️▪•·\-–]+/u,'').trim(); if(!line){continue}
+    if(/^[-—_=]{4,}/.test(raw.trim())||/可以參加|請接龍|^請假/.test(line)){inSongs=false;inDress=false;if(/可以參加|請接龍|^請假/.test(line))break;continue}
+    if(/個人獨奏|獨奏\/重奏|獨奏／重奏/.test(line)&&!/^(曲目|時間)/.test(line)){solo=true;inSongs=false;continue}
+    const f=line.match(/^(邀請單位|邀約單位|活動內容|活動名稱|邀請人|日期|日前|時間|集合時間|地點|攜伴|服裝|曲目)\s*:\s*(.*)$/);
+    if(f){found++;const k=f[1],v=f[2].trim();inSongs=false;inDress=false;
+      if(k==='邀請單位'||k==='邀約單位')o.unit=v;
+      else if(k==='活動內容'||k==='活動名稱')o.title=v;
+      else if(k==='邀請人')o.inviter=v;
+      else if(k==='日期'||k==='日前')o.date=parseDate(v);
+      else if(k==='時間'){const t=v.match(/\d{1,2}:\d{2}/g)||[];o.start=t[0]?hhmm(t[0]):'';o.end=t[1]&&/^\d{1,2}:\d{2}\s*[~\-－到至]\s*\d{1,2}:\d{2}/.test(v)?hhmm(t[1]):'';if(v.replace(/[\d:~\-－\s到至]/g,'').length)notes.push('時間：'+v)}
+      else if(k==='集合時間')o.gather=v;
+      else if(k==='地點')o.place=v;
+      else if(k==='攜伴')o.companion=/⭕|○|〇|可|是|O|o|✔/.test(v)&&!/❌|✕|×|不|否|X|x/.test(v);
+      else if(k==='服裝'){if(v){o.dressF=o.dressM=v}inDress=true}
+      else if(k==='曲目'){o.songNote=v;inSongs=true}
+      continue}
+    const dr=line.match(/(女生|男生)\s*:\s*(.*)$/);
+    if(dr){if(dr[2].trim())o[dr[1]==='女生'?'dressF':'dressM']=dr[2].trim();found++;continue}
+    if(inSongs){const sm=line.match(/^\d{1,2}\s*[.、．)]\s*(.+)$/);if(sm){songs.push(sm[1].trim());continue}}
+    if(/^📌/.test(line)){notes.push(line.replace(/^📌\s*/,''));continue}
+  }
+  if(!found){say('看不出接龍格式，請確認有「活動內容：」「日期：」這類標題。');return}
+  const set=(id,v)=>{const el=$('#'+id);if(el&&v!=null&&v!=='')el.value=v};
+  set('f_title',o.title);set('f_unit',o.unit);set('f_inviter',o.inviter);set('f_date',o.date);set('f_gather',o.gather);set('f_start',o.start);set('f_end',o.end);set('f_place',o.place);set('f_songNote',o.songNote);set('f_dressF',o.dressF);set('f_dressM',o.dressM);
+  if(o.companion!=null)$('#f_companion').value=o.companion?'1':'0';
+  if(solo)$('#f_allowSolo').value='1';
+  if(songs.length){S.form.songs=songs;$('#songEd').innerHTML=songEd()}
+  if(notes.length){const n=$('#f_note');n.value=(n.value?n.value+'\n':'')+notes.join('\n')}
+  saveDraft();
+  say('已自動填入，請往下檢查每個欄位，沒問題再按「儲存」。'+(solo?'（偵測到獨奏／重奏，已設為開放；節目表請團員自行新增。）':''));
+  $('#f_title').scrollIntoView({block:'center'});
+}
 function gate(fn){if(S.unlocked)fn();else{S.pw=fn;render(true);const p=$('#pw');if(p)p.focus()}}
 document.addEventListener('input',ev=>{
   if(ev.target.id!=='me') return; const v=ev.target.value.trim(), m=memList().find(x=>x.name===v), id=m?m.id:'';
@@ -379,7 +433,7 @@ document.addEventListener('submit',async ev=>{
     const pend=g('f_song'); if(pend)(S.form.songs||(S.form.songs=[])).push(pend);
     const data={title:g('f_title'),unit:g('f_unit'),inviter:g('f_inviter'),date:g('f_date'),gather:g('f_gather'),start:g('f_start'),end:g('f_end'),place:g('f_place'),companion:g('f_companion')==='1',songNote:g('f_songNote'),dressF:g('f_dressF'),dressM:g('f_dressM'),songs:S.form.songs||[],allowSolo:g('f_allowSolo')==='1',note:g('f_note')};
     if(!data.title||!data.date) return;
-    try{const ref=S.form.id?db.doc('events/'+S.form.id):db.collection('events').doc();await ref.set(data);S.form=null;S.detail=ref.id;say('');render(true)}catch(x){fail(x)}
+    try{const ref=S.form.id?db.doc('events/'+S.form.id):db.collection('events').doc();await ref.set(data);if(!S.form.id){try{localStorage.removeItem('sax-draft')}catch(e){}}S.form=null;S.detail=ref.id;say('');render(true)}catch(x){fail(x)}
   }
   if(ev.target.id==='memForm'){
     const name=g('m_name'); if(!name) return;
