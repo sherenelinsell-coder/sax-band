@@ -528,7 +528,7 @@ function parseInto(txt){
     if(/^📌/.test(line)){notes.push(line.replace(/^📌\s*/,''));continue}
   }
   if(!found){const all=txt.trim(),first=lines.map(l=>l.trim()).find(Boolean)||'';
-    o.title=first.slice(0,40);o.date=parseDate(all);notes.splice(0,notes.length,all);
+    o.title=first.slice(0,40);o.date=parseDate(all);const rest=lines.map(l=>l.trim()).filter(l=>l&&!/^[◦○●・]/.test(l));if(rest[0]===first)rest.shift();notes.splice(0,notes.length,rest.join('\n'));
     o.kind=/團練|上課|練習|複習/.test(all)?'practice':'ask'}
   else if(bullets.length)o.kind=o.kind||'ask';
   if(o.kind){$('#f_kind').value=o.kind;if(!S.more)$('#evForm').classList.toggle('simple',o.kind!=='show'&&!songs.length);$('#f_options').value=bullets.length?bullets.join('、'):DEF_OPTS[o.kind]}
