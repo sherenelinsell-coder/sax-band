@@ -584,7 +584,7 @@ function parseInto(txt){
   if(o.companion!=null)$('#f_companion').value=o.companion?'1':'0';
   if(solo)$('#f_allowSolo').value='1';
   if(songs.length){S.form.songs=songs;$('#songEd').innerHTML=songEd()}
-  if(notes.length){$('#f_note').value=notes.join('\n')}
+  if(notes.length){const fn=$('#f_note'),cur=fn.value.trim();if(S.form.id&&cur){const add=notes.filter(l=>!cur.includes(l));if(add.length)fn.value=cur+'\n'+add.join('\n')}else fn.value=notes.join('\n')}
   S.form.roster=(roster.go.length||roster.leave.length)?matchRoster(roster):null;$('#rosterBox').innerHTML=rosterHtml();
   saveDraft();
   say((S.form.roster?'已讀到接龍名單（見下方黃框），':'')+(found?'已自動填入':'這段不是接龍格式，已把全文放進備註、猜了日期和選項')+'，請往下檢查每個欄位，沒問題再按「儲存」。'+(solo?'（偵測到獨奏／重奏，已設為開放；節目表請團員自行新增。）':''));
