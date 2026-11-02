@@ -134,6 +134,43 @@ table.st th,table.st td{text-align:left;padding:6px 4px;border-bottom:1px solid 
 .cstep b{min-width:1.2em;text-align:center;color:var(--ink);font-variant-numeric:tabular-nums}
 .mem .cstep{margin-left:4px}
 .mem{flex-wrap:wrap}
+/* 演奏站位 */
+.mfold{width:100%;display:flex;justify-content:space-between;align-items:baseline;border-radius:12px;padding:5px 12px;background:var(--brass-soft);border:2px solid #f0d27a;font-weight:900;color:var(--sun-ink);font-size:.98rem}
+.mfold small{font-weight:700;color:var(--brass);font-size:.85rem}
+.mini{display:block;width:100%;margin-top:6px;border-radius:14px;padding:6px;background:var(--brass-soft);border:2px solid #f0d27a;text-align:left}
+.mini .mh{display:block;text-align:right;font-weight:700;color:var(--brass);font-size:.85rem;padding:2px 4px 0}
+.dfold{width:100%;display:flex;justify-content:space-between;align-items:center;border-radius:18px;padding:12px 16px;font-weight:900;font-size:1.1rem;background:var(--surface);border:2px solid var(--line);box-shadow:0 4px 0 var(--line)}
+.dfold small{font-weight:700;font-size:.9rem;color:var(--brass)}
+.sheet{position:fixed;inset:0;z-index:50;background:var(--bg);overflow-y:auto}
+.sheet>div{max-width:760px;margin:0 auto;padding:16px;display:flex;flex-direction:column;gap:12px}
+.sheet .sh{display:flex;justify-content:space-between;align-items:center;gap:8px;font-size:1.2rem;font-weight:900}
+.where{background:var(--brass-soft);color:var(--sun-ink);border-radius:12px;padding:8px 12px;font-weight:700}
+.stage{border-radius:16px;overflow:hidden;background:linear-gradient(#e9cf9f,#dcb983);border:2px solid #cfa86b}
+.stage .back,.stage .aud{text-align:center;font-size:.78rem;font-weight:700;letter-spacing:.1em;padding:3px 0}
+.stage .back{background:#8a5a3b;color:#f6e3c8}.stage .aud{background:#f3e9d8;color:var(--muted)}
+.srow{position:relative}
+.srow .lbl{position:absolute;left:6px;top:0;font-size:.72rem;font-weight:700;color:#7a5530;background:rgba(255,248,232,.8);border-radius:99px;padding:0 7px;z-index:1}
+.sp{position:absolute;display:grid;place-items:center;border-radius:50%;background:#6f4f39;border:2px solid #fffaf0;font-weight:900;color:#fff;transform:translateX(-50%);line-height:1;box-shadow:0 2px 3px rgba(0,0,0,.25);text-align:center}
+.sp.guest{background:var(--sage)}
+.sp.me{background:var(--brass);box-shadow:0 0 0 3px #ffd84a}
+.sp.gap{background:transparent;border:2px dashed rgba(111,79,57,.45);box-shadow:none}
+.slst{display:flex;flex-direction:column;gap:6px}
+.slst div{background:#fbf6ec;border-radius:10px;padding:6px 10px}
+.slst b{color:var(--sun-ink)}.slst .meN{color:var(--brass);font-weight:900}
+.stagebox{border:2px solid var(--line);border-radius:16px;padding:12px;display:flex;flex-direction:column;gap:10px}
+.stagebox .chk{display:flex;flex-direction:row;align-items:center;gap:10px;font-weight:900;color:var(--ink);font-size:1.05rem}
+.stagebox .chk input{width:26px;height:26px;accent-color:var(--brass);flex:none}
+#stageEd{display:flex;flex-direction:column;gap:10px}
+.erow{border:2px solid var(--line);border-radius:12px;padding:8px;display:flex;flex-direction:column;gap:6px}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{border:2px solid #cdb08a;background:#fffaf0;border-radius:999px;padding:5px 12px;font-weight:700;font-size:1rem}
+.chip.sel{background:#ffd84a;border-color:#e2b400}
+.chip.gap{border-style:dashed;color:var(--muted);background:transparent;font-weight:500}
+.chip.guest{border-color:var(--sage);color:var(--sage)}
+.chip .k{font-size:.72rem;color:var(--muted);margin-right:3px;font-weight:500}
+.abar{position:sticky;bottom:80px;background:#4f3b2d;color:#fff;border-radius:14px;padding:10px;display:flex;flex-direction:column;gap:8px;z-index:3;box-shadow:0 6px 16px rgba(0,0,0,.25)}
+.abar button{background:#fffaf0;border-color:#fffaf0;color:#4f3b2d;font-weight:700}
+.abar button.dark{background:transparent;color:#fff;border-color:#a88b74}
 </style>
 </head>
 <body>
@@ -244,6 +281,7 @@ function card(e){
       <button class="evt" data-act="open" data-e="${e.id}">${esc(e.title)}</button>
       <div class="meta"><span>${esc(timeStr(e))}${e.gather?'（'+esc(e.gather)+' 集合）':''}</span><span>${esc(e.place)}</span><span>${esc(e.unit)}</span></div>
       <div class="row">${t.opts.map((o,i)=>`<span class="cnt ${i?'lv':'go'}">${esc(o)} ${t.groups[o].length}${!i&&t.guests?'＋伴 '+t.guests:''}</span>`).join('')}<span class="cnt no">未回覆 ${t.no.length}</span>${e.allowSolo?'<span class="cnt solo">開放獨奏報名</span>':''}</div>
+      ${stageCard(e)}
       <div class="row">${me&&S.members[me]?seg(e.id,me)+compStep(e.id,me):'<span class="note">先在上方「我是」輸入姓名，再報名</span>'}<button class="link" data-act="open" data-e="${e.id}">${k==='show'?'看名單與曲目':'看說明與名單'}</button></div>
     </div></article>`;
 }
@@ -280,6 +318,7 @@ function vDetail(e){
     <div>${solos.map((x,i)=>`<div class="mem"><span class="no">${pad(i+1)}.</span><span class="n">${esc(x.performers)}${x.title?' － '+esc(x.title):''}</span>${S.canWrite?(S.confirmDel==='solo:'+x.id?`<button data-act="solodel" data-id="${x.id}" style="color:var(--leave)">確定移除</button><button data-act="nodel">取消</button>`:`<button data-act="solomv" data-i="${i}" data-d="-1" aria-label="上移"${i?'':' disabled'}>↑</button><button data-act="solomv" data-i="${i}" data-d="1" aria-label="下移"${i<solos.length-1?'':' disabled'}>↓</button><button class="link" data-act="soloask" data-id="${x.id}">移除</button>`):''}</div>`).join('')||'<p class="note">還沒有人報名獨奏或重奏。</p>'}</div>
     ${e.allowSolo&&S.canWrite?`<form class="row" id="soloForm" data-e="${e.id}"><input id="s_who" aria-label="表演者" placeholder="表演者（重奏請寫全部的人）" value="${esc(me&&S.members[me]?S.members[me].name:'')}" required><input id="s_title" aria-label="曲目" placeholder="曲目" required><button class="primary" type="submit">新增我的曲目</button></form><p class="note">這場開放獨奏／重奏，想上台的團員請在這裡加上自己的曲目。調整順序需要管理密碼。</p>`:''}
   </section>`:''}
+  ${stageDetail(e)}
   <section class="panel">
     ${false?`<div class="row"><label for="comp">我的攜伴人數</label><select id="comp" data-e="${e.id}">${[0,1,2,3,4].map(n=>`<option${(myR.companions||0)===n?' selected':''}>${n}</option>`).join('')}</select></div>`:''}
     ${Object.keys(t.groups).map((o,i)=>`<h3>${i?'🙏':'✅'} ${esc(o)}　${t.groups[o].length} 人${!i&&t.guests?'，攜伴 '+t.guests+' 人':''}</h3><div>${t.groups[o].map((x,j)=>row(x,j)).join('')||'<p class="note">目前沒有人。</p>'}</div>`).join('')}
@@ -319,6 +358,7 @@ function vForm(e){
     <label class="w xtra">開放團員新增獨奏／重奏曲目<select id="f_allowSolo"><option value="0">不開放</option><option value="1"${e.allowSolo?' selected':''}>開放</option></select></label>
     <div class="w xtra"><span class="lab">團奏曲目（用箭頭調整順序，編號會自動重排）</span><div id="songEd">${songEd()}</div></div>
     <div class="w more"><button type="button" data-act="more">＋ 顯示更多欄位（邀請單位、服裝、曲目、獨奏…）</button></div>
+    <div class="w stagebox">${(()=>{const st=S.form.stage||(S.form.stage={on:false,rows:[[],[]]});if(!Array.isArray(st.rows)||!st.rows.length)st.rows=[[],[]];return `<label class="chk"><input type="checkbox" id="f_stageOn"${st.on?' checked':''}>🎷 這場要顯示演奏站位</label><div id="stageEd"${st.on?'':' hidden'}>${stEd()}</div>`})()}</div>
     <label class="w">備註<textarea id="f_note">${v('note')}</textarea></label>
     <div class="row w"><button class="primary" type="submit">儲存</button><button type="button" data-act="back">取消</button></div>
   </form></section>`;
@@ -424,6 +464,8 @@ function render(force){
   else if(S.buyView&&S.buys[S.buyView]) view.innerHTML=vBuy(S.buys[S.buyView]);
   else if(S.detail&&S.events[S.detail]) view.innerHTML=vDetail(S.events[S.detail]);
   else {S.detail=null; S.buyView=null; view.innerHTML=S.tab==='buy'?vBuys():S.tab==='cal'?vCal():S.tab==='songs'?vSongs():S.tab==='members'?vMembers():vList();}
+  if(S.sheet&&!S.form&&!S.pw) view.insertAdjacentHTML('beforeend',sheetHtml());
+  drawStages();
 }
 function fail(e){
   if(e&&e.code==='bad_pw'){S.unlocked=false;S.pwVal='';say('管理密碼不正確，請重新輸入。')}
@@ -450,10 +492,81 @@ async function rsvp(eid,mid,status,companions){
     say('');
   }catch(e){fail(e)} busy.delete(eid+mid);
 }
+
+/* ===== 演奏站位 ===== */
+const CN='一二三四五六七八九十',GAP='（空位）';
+const isGap=n=>/^[（(]?空位?[）)]?$/.test(n)||n===GAP;
+function stageOf(e){const s=e&&e.stage;return s&&!Array.isArray(s)&&s.on&&Array.isArray(s.rows)&&s.rows.some(r=>r&&r.length)?s:null}
+const shortN=n=>n.length===3&&!/老師/.test(n)?n.slice(1):n;
+const myName=()=>me&&S.members[me]?S.members[me].name:'';
+const isMemN=n=>memList().some(m=>m.name===n);
+function stageHtml(rows,W,flip,mini){
+  const maxN=Math.max(1,...rows.map(r=>r.length)),gap=(W-12)/(maxN+0.6),ME=myName();
+  const compact=!mini&&gap*0.86<34;
+  const d=mini?Math.max(8,Math.min(22,gap*0.7)):compact?Math.max(16,Math.min(26,gap*0.82)):Math.min(44,gap*0.86);
+  const ph=compact?d*2+10:d, fs=compact?Math.max(10,Math.min(14,d*0.6)):Math.min(16,d*0.38), rh=mini?d+12:ph+26, top=mini?6:20;
+  const aud=`<div class="aud" style="${flip?'border-bottom':'border-top'}:2px dashed #cfa86b">觀　眾　席</div>`,back='<div class="back">舞台後方</div>';
+  const order=[...rows.keys()];if(!flip)order.reverse();
+  let h=`<div class="stage">${flip?aud:back}<div style="padding:${mini?2:6}px 0 ${mini?2:8}px">`;
+  order.forEach(ri=>{const r=rows[ri]||[];h+=`<div class="srow" style="height:${rh}px">${mini?'':`<span class="lbl">第${CN[ri]}排</span>`}`;
+    r.forEach((n,i)=>{let x=W/2+(i-(r.length-1)/2)*gap;if(flip)x=W-x;const me=!!ME&&n===ME;
+      if(isGap(n)){h+=`<div class="sp gap" style="left:${x}px;top:${top+ph*0.25}px;width:${d*0.6}px;height:${ph*0.5}px"></div>`;return}
+      const nm=shortN(n).slice(-2),txt=mini?(me?'你':''):compact?[...nm].map(esc).join('<br>'):esc(nm);
+      h+=`<div class="sp${isMemN(n)?'':' guest'}${me?' me':''}" style="left:${x}px;top:${top}px;width:${d}px;height:${ph}px;font-size:${mini?(me?Math.max(9,d*0.5):0):fs}px;border-radius:${compact?'999px':'50%'}">${txt}</div>`});
+    h+='</div>'});
+  return h+`</div>${flip?back:aud}</div>`;
+}
+const stageList=rows=>{const ME=myName();return [...rows.keys()].reverse().map(ri=>`<div><b>第${CN[ri]}排</b>（台下看由左到右）：${(rows[ri]||[]).map(n=>n===ME?`<span class="meN">${esc(n)}</span>`:isGap(n)?'<span class="note">（空位）</span>':esc(n)).join('、')||'—'}</div>`).join('')};
+function stageFull(eid){const st=stageOf(S.events[eid]);if(!st)return '';const ME=myName(),inIt=ME&&st.rows.some(r=>r.includes(ME));
+  return `<div class="where">${inIt?`紅色圓圈＋黃框就是你（${esc(shortN(ME))}）。`:ME?'這場的站位表裡沒有你的名字。':'在上方「我是」輸入姓名，就會標出你的位置。'}</div>
+  <div class="row"><span class="seg"><button class="${S.sflip?'':'on go'}" data-act="sflip" data-v="0">從觀眾看</button><button class="${S.sflip?'on go':''}" data-act="sflip" data-v="1">從台上看</button></span></div>
+  <div data-stg="${eid}" data-flip="${S.sflip?1:0}"></div><div class="slst">${stageList(st.rows)}</div>`}
+function stageCard(e){if(!stageOf(e))return '';const o=S.mf&&S.mf[e.id];
+  return `<div><button class="mfold" data-act="mfold" data-e="${e.id}">🎷 已排站位<small>${o?'收起來 ▴':'點開看 ▾'}</small></button>${o?`<button class="mini" data-act="sheet" data-e="${e.id}" aria-label="看大圖"><span style="display:block" data-stg="${e.id}" data-mini="1"></span><span class="mh">點圖看大圖 ›</span></button>`:''}</div>`}
+function stageDetail(e){if(!stageOf(e))return '';
+  return `<div><button class="dfold" data-act="dfold">🎷 演奏站位<small>${S.df?'收起來 ▴':'點開看 ▾'}</small></button>${S.df?`<section class="panel" style="margin-top:10px">${stageFull(e.id)}</section>`:''}</div>`}
+function sheetHtml(){const e=S.events[S.sheet];if(!e||!stageOf(e))return '';
+  return `<div class="sheet" role="dialog" aria-label="演奏站位"><div><div class="sh"><span>🎷 演奏站位</span><button data-act="sheetx" style="font-size:1rem;flex:none">關閉 ✕</button></div><div class="note" style="margin-top:-8px">${esc(e.title)}</div>${stageFull(e.id)}</div></div>`}
+function drawStages(){document.querySelectorAll('[data-stg]').forEach(el=>{const id=el.dataset.stg,rows=id==='form'?(S.form&&S.form.stage?S.form.stage.rows:[]):(stageOf(S.events[id])||{}).rows||[];
+  el.innerHTML=stageHtml(rows,el.clientWidth||300,el.dataset.flip==='1',el.dataset.mini==='1')})}
+addEventListener('resize',()=>drawStages());
+/* 團長編輯 */
+function goingNames(){if(!S.form||!S.form.id)return [];return tally(S.form.id).go.map(x=>x.m.name)}
+function stEd(){const st=S.form.stage,sel=S.ssel,rows=st.rows,placed=new Set(rows.flat()),pool=goingNames().filter(n=>!placed.has(n));
+  const selName=sel?(sel.n!=null?sel.n:rows[sel.r][sel.i]):null;
+  let h=`<p class="note">名字順序＝<b>從台下看，由左到右</b>。點一個名字（變黃色），再點另一個名字就互換位置。</p><div data-stg="form"></div>`;
+  h+=[...rows.keys()].reverse().map(ri=>`<div class="erow"><div class="row" style="justify-content:space-between"><b>第${CN[ri]}排（${rows[ri].filter(n=>!isGap(n)).length} 人）</b>${sel&&!(sel.n==null&&sel.r===ri)?`<button type="button" data-act="sput" data-r="${ri}">放到這排</button>`:''}</div>
+    <div class="chips">${rows[ri].map((n,i)=>`<button type="button" class="chip${isGap(n)?' gap':isMemN(n)?'':' guest'}${sel&&sel.n==null&&sel.r===ri&&sel.i===i?' sel':''}" data-act="sc" data-r="${ri}" data-i="${i}"><span class="k">${i+1}</span>${isGap(n)?'空位':esc(n)}</button>`).join('')||'<span class="note">這排還沒有人</span>'}<button type="button" class="chip gap" data-act="saddgap" data-r="${ri}">＋ 空位</button></div></div>`).join('');
+  h+=`<div class="erow"><b>還沒排進去（參加的團員）</b><div class="chips">${pool.map(n=>`<button type="button" class="chip${sel&&sel.n===n?' sel':''}" data-act="sp" data-n="${esc(n)}">${esc(n)}</button>`).join('')||`<span class="note">${S.form.id?'參加的人都排進去了。':'活動儲存、團員報名之後，這裡會出現參加名單。'}</span>`}</div></div>`;
+  if(sel)h+=`<div class="abar"><div>已選：<b>${isGap(selName)?'空位':esc(selName)}</b>　${sel.n==null?'再點另一個名字可互換':'點「放到這排」，或點台上某人和他互換'}</div><div class="row">${sel.n==null?`<button type="button" data-act="smv" data-d="-1">← 往左</button><button type="button" data-act="smv" data-d="1">往右 →</button>${isGap(selName)?'<button type="button" data-act="sdown">刪除空位</button>':'<button type="button" data-act="sgapr">右邊加空位</button><button type="button" data-act="sdown">移下台</button>'}`:''}<button type="button" class="dark" data-act="scancel">取消</button></div></div>`;
+  h+=`<div class="row"><button type="button" data-act="sauto">依參加名單排兩排</button><button type="button" data-act="saddrow">＋ 新增一排</button><button type="button" data-act="sdelrow">刪掉最後一排</button></div>
+    <div class="row"><input id="s_guest" placeholder="非團員，例：侯老師" aria-label="非團員名字" style="flex:1;min-width:0"><button type="button" data-act="sguest">加到第一排</button></div>`;
+  return h}
+function stRefresh(){const b=$('#stageEd');if(b){b.hidden=!S.form.stage.on;b.innerHTML=stEd()}saveDraft();drawStages()}
+function stAct(a,b){const st=S.form.stage,rows=st.rows,sel=S.ssel;
+  if(a==='sc'){const r=+b.dataset.r,i=+b.dataset.i;
+    if(!sel)S.ssel={r,i};else if(sel.n==null&&sel.r===r&&sel.i===i)S.ssel=null;
+    else if(sel.n==null){const t=rows[r][i];rows[r][i]=rows[sel.r][sel.i];rows[sel.r][sel.i]=t;S.ssel=null}
+    else{rows[r][i]=sel.n;S.ssel=null}}
+  else if(a==='sp'){const n=b.dataset.n;if(sel&&sel.n==null){rows[sel.r][sel.i]=n;S.ssel=null}else S.ssel=sel&&sel.n===n?null:{n}}
+  else if(a==='sput'&&sel){const r=+b.dataset.r;if(sel.n!=null)rows[r].push(sel.n);else{const[v]=rows[sel.r].splice(sel.i,1);rows[r].push(v)}S.ssel=null}
+  else if(a==='smv'&&sel&&sel.n==null){const R=rows[sel.r],j=sel.i+Number(b.dataset.d);if(j>=0&&j<R.length){[R[sel.i],R[j]]=[R[j],R[sel.i]];sel.i=j}}
+  else if(a==='sdown'&&sel&&sel.n==null){rows[sel.r].splice(sel.i,1);S.ssel=null}
+  else if(a==='sgapr'&&sel&&sel.n==null){rows[sel.r].splice(sel.i+1,0,GAP);S.ssel=null}
+  else if(a==='scancel')S.ssel=null;
+  else if(a==='saddgap')rows[+b.dataset.r].push(GAP);
+  else if(a==='saddrow'){if(rows.length<6)rows.push([])}
+  else if(a==='sdelrow'){if(rows.length>1)rows.pop();S.ssel=null}
+  else if(a==='sauto'){const L=goingNames(),h=Math.ceil(L.length/2);if(!L.length){say('目前還沒有人報名參加，無法自動排。');return}st.rows=[L.slice(h),L.slice(0,h)];S.ssel=null}
+  else if(a==='sguest'){const v=($('#s_guest').value||'').trim();if(v&&!rows.flat().includes(v))rows[0].push(v)}
+  stRefresh()}
+function stageText(e){const st=stageOf(e);if(!st)return [];return ['✅演奏站位（台下看由左到右）：',...[...st.rows.keys()].reverse().map(ri=>`第${CN[ri]}排：${st.rows[ri].map(n=>isGap(n)?'空位':n).join('、')}`)]}
+
 function chainText(e){
   const t=tally(e.id), L=[];
   L.push('✅邀請單位：'+(e.unit||''),'✅活動內容：'+e.title,'✅邀請人：'+(e.inviter||''),'✅日期：'+roc(e.date),'✅時間：'+timeStr(e),'✅集合時間：'+(e.gather||''),'✅地點：'+(e.place||''),'✅攜伴：'+(e.companion?'⭕':'❌'),'✅服裝：','💃女生：'+(e.dressF||''),'🕺男生：'+(e.dressM||''),'✅曲目： '+(e.songNote||''));
   (e.songs||[]).forEach((s,i)=>L.push(pad(i+1)+'. '+s));
+  L.push(...stageText(e));
   L.push('----------------------------------',t.opts[0]==='參加'?'✅可以參加的團員：':'✅'+t.opts[0]+'：');
   Object.keys(t.groups).forEach((o,gi)=>{if(gi)L.push('',(o==='請假'?'請假':'✅'+o)+'：');t.groups[o].forEach((x,i)=>L.push(pad(i+1)+'. '+x.m.name+(x.r.companions?'（攜伴'+x.r.companions+'）':'')))});
   if(t.no.length) L.push('','尚未回覆：'+t.no.map(m=>m.name).join('、'));
@@ -465,13 +578,19 @@ function chainText(e){
 document.addEventListener('click',async ev=>{
   const tb=ev.target.closest('[data-tab]'); if(tb){say('');S.tab=tb.dataset.tab;S.detail=S.form=S.confirmDel=S.copyText=S.pw=S.buyView=S.buyForm=S.confirmBuy=null;render(true);return}
   const b=ev.target.closest('[data-act]'); if(!b) return; const a=b.dataset.act, e=b.dataset.e;
-  if(a==='open'){S.detail=e;S.buyView=null;S.copyText=null;markSeen(e);render(true);scrollTo(0,0)}
+  if(/^(sc|sp|sput|smv|sdown|sgapr|scancel|saddgap|saddrow|sdelrow|sauto|sguest)$/.test(a)&&S.form&&S.form.stage){stAct(a,b);return}
+  if(a==='mfold'){S.mf=S.mf||{};S.mf[e]=!S.mf[e];render(true);return}
+  if(a==='sheet'){S.sheet=e;render(true);return}
+  if(a==='sheetx'){S.sheet=null;render(true);return}
+  if(a==='dfold'){S.df=!S.df;render(true);return}
+  if(a==='sflip'){S.sflip=b.dataset.v==='1';render(true);return}
+  if(a==='open'){S.df=false;S.sheet=null;S.detail=e;S.buyView=null;S.copyText=null;markSeen(e);render(true);scrollTo(0,0)}
   else if(a==='back'){if(S.pw){S.pw=null}else if(S.form){S.form=null}else if(S.buyForm){S.buyForm=null}else if(S.buyView){S.buyView=null}else S.detail=null;S.copyText=S.confirmDel=null;render(true)}
   else if(a==='new'){S.more=false;gate(()=>{let d=null;try{d=JSON.parse(localStorage.getItem('sax-draft')||'null')}catch(e){}S.form=d||{date:todayStr(),companion:false,songs:[]};render(true);if(d)say('已恢復上次未儲存的草稿。不需要的話按「清空重填」。')})}
   else if(a==='more'){S.more=true;$('#evForm').classList.remove('simple')}
   else if(a==='parse'){parseInto($('#f_paste').value)}
   else if(a==='clearform'){try{localStorage.removeItem('sax-draft')}catch(e){}S.form={...(S.form.id?{id:S.form.id}:{}),date:todayStr(),companion:false,songs:[]};render(true);say('')}
-  else if(a==='edit'){S.more=false;gate(()=>{S.form={...S.events[e],songs:[...(S.events[e].songs||[])]};render(true)})}
+  else if(a==='edit'){S.more=false;gate(()=>{S.form={...S.events[e],songs:[...(S.events[e].songs||[])],stage:(st=>st&&!Array.isArray(st)?JSON.parse(JSON.stringify(st)):{on:false,rows:[[],[]]})(S.events[e].stage)};S.ssel=null;render(true)})}
   else if(a==='askdelev'){gate(()=>{S.confirmDel=e;render(true)})}
   else if(a==='soloask'){S.confirmDel='solo:'+b.dataset.id;render(true)}
   else if(a==='solodel'){try{await db.doc('solos/'+b.dataset.id).delete();S.confirmDel=null;render(true)}catch(x){fail(x)}}
@@ -514,11 +633,11 @@ document.addEventListener('click',async ev=>{
   else if(a==='copy'){const t=chainText(S.events[e]);try{await navigator.clipboard.writeText(t);say('已複製，可以貼到 LINE 群組。')}catch(x){S.copyText=t;render(true);const c=$('#copyBox');if(c){c.focus();c.select()}}}
 });
 function formData(){const g=id=>{const el=$('#'+id);return el?el.value.trim():''};
-  return {...(S.form&&S.form.id?{id:S.form.id}:{}),title:g('f_title'),unit:g('f_unit'),inviter:g('f_inviter'),date:g('f_date'),gather:g('f_gather'),start:g('f_start'),end:g('f_end'),place:g('f_place'),companion:g('f_companion')==='1',songNote:g('f_songNote'),dressF:g('f_dressF'),dressM:g('f_dressM'),songs:(S.form&&S.form.songs)||[],allowSolo:g('f_allowSolo')==='1',note:g('f_note'),kind:g('f_kind')||'show',options:splitOpts(g('f_options'))}}
+  return {...(S.form&&S.form.id?{id:S.form.id}:{}),title:g('f_title'),unit:g('f_unit'),inviter:g('f_inviter'),date:g('f_date'),gather:g('f_gather'),start:g('f_start'),end:g('f_end'),place:g('f_place'),companion:g('f_companion')==='1',songNote:g('f_songNote'),dressF:g('f_dressF'),dressM:g('f_dressM'),songs:(S.form&&S.form.songs)||[],allowSolo:g('f_allowSolo')==='1',note:g('f_note'),stage:S.form.stage?{on:!!S.form.stage.on,rows:S.form.stage.rows}:{on:false,rows:[]},kind:g('f_kind')||'show',options:splitOpts(g('f_options'))}}
 let draftT=null;
 function saveDraft(){if(!S.form||S.form.id)return;clearTimeout(draftT);draftT=setTimeout(()=>{try{localStorage.setItem('sax-draft',JSON.stringify(formData()))}catch(e){}},400)}
 document.addEventListener('input',e=>{if(e.target.closest&&e.target.closest('#evForm')&&e.target.id!=='f_paste')saveDraft()});
-document.addEventListener('change',e=>{if(e.target.id==='f_kind'){$('#f_options').value=DEF_OPTS[e.target.value]||'參加、請假';if(!S.more)$('#evForm').classList.toggle('simple',e.target.value!=='show')}if(e.target.closest&&e.target.closest('#evForm'))saveDraft()});
+document.addEventListener('change',e=>{if(e.target.id==='f_stageOn'&&S.form&&S.form.stage){S.form.stage.on=e.target.checked;if(e.target.checked&&!S.form.stage.rows.some(r=>r.length)&&goingNames().length){const L=goingNames(),h=Math.ceil(L.length/2);S.form.stage.rows=[L.slice(h),L.slice(0,h)]}S.ssel=null;stRefresh();return}if(e.target.id==='f_kind'){$('#f_options').value=DEF_OPTS[e.target.value]||'參加、請假';if(!S.more)$('#evForm').classList.toggle('simple',e.target.value!=='show')}if(e.target.closest&&e.target.closest('#evForm'))saveDraft()});
 function hhmm(t){const m=t.match(/(\d{1,2}):(\d{2})/);return m?pad(+m[1])+':'+m[2]:''}
 function parseDate(v){let m=v.match(/(\d{2,4})\s*[.\/\-年]\s*(\d{1,2})\s*[.\/\-月]\s*(\d{1,2})/);
   if(m){let y=+m[1];if(y<1911)y+=1911;return y+'-'+pad(+m[2])+'-'+pad(+m[3])}
@@ -545,11 +664,13 @@ function rosterHtml(){const r=S.form&&S.form.roster;if(!r)return '';
   <div class="note">名單裡沒有的人，原本在活動簿的登記會保留不動。</div></div>`}
 function parseInto(txt){
   if(!txt.trim()){say('請先把接龍文字貼到框框裡。');return}
-  const o={},songs=[],notes=[],bullets=[],roster={go:[],leave:[]};let inSongs=false,inDress=false,solo=false,found=0,mode='';
+  const o={},songs=[],notes=[],bullets=[],roster={go:[],leave:[]},stg={};let inSongs=false,inDress=false,solo=false,found=0,mode='';
   const lines=txt.replace(/\r/g,'').replace(/：/g,':').replace(/～/g,'~').split('\n');
   for(let raw of lines){
     const bm=raw.trim().match(/^[◦○●・]\s*(.+)$/);if(bm){bullets.push(bm[1].trim());continue}
     const line=raw.replace(/^[\s✅☑✔️⭐️▪•·\-–]+/u,'').trim(); if(!line){continue}
+    if(/^演奏站位/.test(line)){found++;mode='';inSongs=false;inDress=false;continue}
+    const srm=line.match(/^第\s*([一二三四五六七八九十\d])\s*排\s*:\s*(.*)$/);if(srm){const k=isNaN(srm[1])?CN.indexOf(srm[1]):srm[1]-1;found++;stg[k]=srm[2].split(/[、,，\s]+/).map(x=>x.trim()).filter(Boolean).map(x=>isGap(x)?GAP:x);continue}
     if(/可以參加|請接龍/.test(line)){mode='go';inSongs=false;inDress=false;continue}
     if(/^請假/.test(line)){mode='leave';inSongs=false;const rest=line.replace(/^請假\s*:?\s*/,'');if(rest)addRoster(roster,'leave',rest);continue}
     if(/^備[註注]/.test(line)){mode='note';const rest=line.replace(/^備[註注]\s*:?\s*/,'');if(rest)notes.push(rest);continue}
@@ -587,6 +708,7 @@ function parseInto(txt){
   if(solo)$('#f_allowSolo').value='1';
   if(songs.length){S.form.songs=songs;$('#songEd').innerHTML=songEd()}
   if(notes.length){const fn=$('#f_note'),cur=fn.value.trim();if(S.form.id&&cur){const add=notes.filter(l=>!cur.includes(l));if(add.length)fn.value=cur+'\n'+add.join('\n')}else fn.value=notes.join('\n')}
+  {const ks=Object.keys(stg).map(Number);if(ks.length){const R=[];for(let i=0;i<=Math.max(...ks);i++)R.push(stg[i]||[]);S.form.stage={on:true,rows:R};S.ssel=null;const cb=$('#f_stageOn');if(cb)cb.checked=true;stRefresh()}}
   S.form.roster=(roster.go.length||roster.leave.length)?matchRoster(roster):null;$('#rosterBox').innerHTML=rosterHtml();
   saveDraft();
   say((S.form.roster?'已讀到接龍名單（見下方綠框），':'')+(found?'已自動填入':'這段不是接龍格式，已把全文放進備註、猜了日期和選項')+'，請往下檢查每個欄位，沒問題再按「儲存」。'+(solo?'（偵測到獨奏／重奏，已設為開放；節目表請團員自行新增。）':''));
@@ -622,7 +744,7 @@ document.addEventListener('submit',async ev=>{
     return}
   if(ev.target.id==='evForm'){
     const pend=g('f_song'); if(pend)(S.form.songs||(S.form.songs=[])).push(pend);
-    const data={title:g('f_title'),unit:g('f_unit'),inviter:g('f_inviter'),date:g('f_date'),gather:g('f_gather'),start:g('f_start'),end:g('f_end'),place:g('f_place'),companion:g('f_companion')==='1',songNote:g('f_songNote'),dressF:g('f_dressF'),dressM:g('f_dressM'),songs:S.form.songs||[],allowSolo:g('f_allowSolo')==='1',note:g('f_note'),kind:g('f_kind')||'show',options:(o=>o.join()==='參加,請假'?[]:o)(splitOpts(g('f_options')))};
+    const data={title:g('f_title'),unit:g('f_unit'),inviter:g('f_inviter'),date:g('f_date'),gather:g('f_gather'),start:g('f_start'),end:g('f_end'),place:g('f_place'),companion:g('f_companion')==='1',songNote:g('f_songNote'),dressF:g('f_dressF'),dressM:g('f_dressM'),songs:S.form.songs||[],allowSolo:g('f_allowSolo')==='1',note:g('f_note'),stage:S.form.stage?{on:!!S.form.stage.on,rows:S.form.stage.rows}:{on:false,rows:[]},kind:g('f_kind')||'show',options:(o=>o.join()==='參加,請假'?[]:o)(splitOpts(g('f_options')))};
     if(!data.title||!data.date) return;
     if(S.saving) return; S.saving=true; S.lastRoster=S.form.roster||null;
     const isNew=!S.form.id, ref=isNew?db.collection('events').doc():db.doc('events/'+S.form.id);
