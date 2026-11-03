@@ -678,11 +678,13 @@ function parseInto(txt){
     if(mode==='go'||mode==='leave'){if(/^[-—_=]{4,}/.test(line))continue;addRoster(roster,mode,line);continue}
     if(/^[-—_=]{4,}/.test(raw.trim())){inSongs=false;inDress=false;continue}
     if(/個人獨奏|獨奏\/重奏|獨奏／重奏/.test(line)&&!/^(曲目|時間)/.test(line)){solo=true;inSongs=false;continue}
-    const f=line.match(/^(邀請單位|邀約單位|活動內容|活動名稱|邀請人|日期|日前|時間|集合時間|地點|攜伴|服裝|曲目)\s*:\s*(.*)$/);
+    const f=line.match(/^(邀請單位|邀約單位|活動內容|活動名稱|邀請人|日期|日前|時間|集合時間|地點|攜伴|服裝|曲目|類型|回覆選項)\s*:\s*(.*)$/);
     if(f){found++;const k=f[1],v=f[2].trim();inSongs=false;inDress=false;
       if(k==='邀請單位'||k==='邀約單位')o.unit=v;
       else if(k==='活動內容'||k==='活動名稱')o.title=v;
       else if(k==='邀請人')o.inviter=v;
+      else if(k==='類型'){const kk=Object.keys(KINDS).find(x=>v.includes(KINDS[x])||(x==='show'&&/表演|演奏/.test(v))||(x==='invite'&&/邀請/.test(v)));if(kk)o.kind=kk}
+      else if(k==='回覆選項')o.opts=v;
       else if(k==='日期'||k==='日前')o.date=parseDate(v);
       else if(k==='時間'){const t=v.match(/\d{1,2}:\d{2}/g)||[];o.start=t[0]?hhmm(t[0]):'';o.end=t[1]&&/^\d{1,2}:\d{2}\s*[~\-－到至]\s*\d{1,2}:\d{2}/.test(v)?hhmm(t[1]):'';if(v.replace(/[\d:~\-－\s到至]/g,'').length)notes.push('時間：'+v)}
       else if(k==='集合時間')o.gather=v;
@@ -700,8 +702,10 @@ function parseInto(txt){
     o.title=first.slice(0,40);o.date=parseDate(all);const rest=lines.map(l=>l.trim()).filter(l=>l&&!/^[◦○●・]/.test(l));if(rest[0]===first)rest.shift();notes.splice(0,notes.length,rest.join('\n'));
     o.kind=/團練|上課|練習|複習/.test(all)?'practice':'ask'}
   else if(bullets.length)o.kind=o.kind||'ask';
+  else if(!o.kind&&/團練|上課|練習/.test(o.title||''))o.kind='practice';
   if(o.kind){$('#f_kind').value=o.kind;if(!S.more)$('#evForm').classList.toggle('simple',o.kind!=='show'&&!songs.length);$('#f_options').value=bullets.length?bullets.join('、'):DEF_OPTS[o.kind]}
   else if(bullets.length)$('#f_options').value=bullets.join('、');
+  if(o.opts)$('#f_options').value=splitOpts(o.opts).join('、');
   const set=(id,v)=>{const el=$('#'+id);if(el&&v!=null&&v!=='')el.value=v};
   set('f_title',o.title);set('f_unit',o.unit);set('f_inviter',o.inviter);set('f_date',o.date);set('f_gather',o.gather);set('f_start',o.start);set('f_end',o.end);set('f_place',o.place);set('f_songNote',o.songNote);set('f_dressF',o.dressF);set('f_dressM',o.dressM);
   if(o.companion!=null)$('#f_companion').value=o.companion?'1':'0';
