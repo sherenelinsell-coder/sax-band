@@ -128,6 +128,11 @@ table.st th,table.st td{text-align:left;padding:6px 4px;border-bottom:1px solid 
 .thumbs{display:flex;flex-wrap:wrap;gap:8px}
 .thumbs div{position:relative} .thumbs img{width:76px;height:76px;object-fit:cover;border-radius:10px;display:block}
 .thumbs button{position:absolute;top:-6px;right:-6px;padding:0 7px;font-size:.8rem;background:var(--surface)}
+.navbtn{display:inline-block;margin-left:8px;border:2px solid var(--brass);color:var(--brass);background:var(--surface);border-radius:999px;padding:1px 12px;font-weight:700;font-size:.92rem;text-decoration:none;white-space:nowrap}
+.att{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:10px}
+.att a{display:block;border-radius:12px;overflow:hidden;border:2px solid var(--line);background:#f3e9d8}
+.att img{display:block;width:100%;aspect-ratio:4/3;object-fit:cover}
+.atttag{font-size:.8rem;font-weight:700;border-radius:99px;padding:2px 9px;background:var(--blue-soft,#e2ebf3);color:var(--blue,#4c6e8f)}
 #evForm.simple .xtra{display:none} #evForm:not(.simple) .more{display:none}
 .cstep{display:inline-flex;align-items:center;gap:4px;border:2px solid var(--line);border-radius:999px;padding:0 4px 0 10px;font-size:.88rem;color:var(--muted);background:var(--surface)}
 .cstep button{border:0;padding:2px 10px;font-weight:900;font-size:1rem;background:none}
@@ -280,7 +285,7 @@ function card(e){
       ${k!=='show'||isNew(e.id)?`<div class="row">${k!=='show'?`<span class="ktag k-${k}">${KINDS[k]}</span>`:''}${isNew(e.id)?'<span class="ktag newtag">新</span>':''}</div>`:''}
       <button class="evt" data-act="open" data-e="${e.id}">${esc(e.title)}</button>
       <div class="meta"><span>${esc(timeStr(e))}${e.gather?'（'+esc(e.gather)+' 集合）':''}</span><span>${esc(e.place)}</span><span>${esc(e.unit)}</span></div>
-      <div class="row">${t.opts.map((o,i)=>`<span class="cnt ${i?'lv':'go'}">${esc(o)} ${t.groups[o].length}${!i&&t.guests?'＋伴 '+t.guests:''}</span>`).join('')}<span class="cnt no">未回覆 ${t.no.length}</span>${e.allowSolo?'<span class="cnt solo">開放獨奏報名</span>':''}</div>
+      <div class="row">${t.opts.map((o,i)=>`<span class="cnt ${i?'lv':'go'}">${esc(o)} ${t.groups[o].length}${!i&&t.guests?'＋伴 '+t.guests:''}</span>`).join('')}<span class="cnt no">未回覆 ${t.no.length}</span>${e.allowSolo?'<span class="cnt solo">開放獨奏報名</span>':''}${(e.photos||[]).length?'<span class="atttag">📎 附件</span>':''}</div>
       ${stageCard(e)}
       <div class="row">${me&&S.members[me]?seg(e.id,me)+compStep(e.id,me):'<span class="note">先在上方「我是」輸入姓名，再報名</span>'}<button class="link" data-act="open" data-e="${e.id}">${k==='show'?'看名單與曲目':'看說明與名單'}</button></div>
     </div></article>`;
@@ -305,7 +310,7 @@ function vDetail(e){
       ${e.inviter?`<dt>邀請人</dt><dd>${esc(e.inviter)}</dd>`:''}
       ${timeStr(e)?`<dt>時間</dt><dd>${esc(timeStr(e))}</dd>`:''}
       ${e.gather?`<dt>集合時間</dt><dd>${esc(e.gather)}</dd>`:''}
-      ${e.place?`<dt>地點</dt><dd>${esc(e.place)}</dd>`:''}
+      ${e.place?`<dt>地點</dt><dd>${esc(e.place)}<a class="navbtn" href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(e.place)}" target="_blank" rel="noopener">📍 導航</a></dd>`:''}
       ${e.companion||kindOf(e)==='show'?`<dt>攜伴</dt><dd>${e.companion?'可以':'不可'}</dd>`:''}
       ${e.dressF||e.dressM?`<dt>服裝</dt><dd>${e.dressF&&e.dressF===e.dressM?esc(e.dressF):[e.dressF&&'💃 女生：'+esc(e.dressF),e.dressM&&'🕺 男生：'+esc(e.dressM)].filter(Boolean).join('<br>')||'—'}</dd>`:''}
       ${e.note?`<dt>備註</dt><dd><pre>${esc(e.note)}</pre></dd>`:''}
@@ -319,6 +324,7 @@ function vDetail(e){
     ${e.allowSolo&&S.canWrite?`<form class="row" id="soloForm" data-e="${e.id}"><input id="s_who" aria-label="表演者" placeholder="表演者（重奏請寫全部的人）" value="${esc(me&&S.members[me]?S.members[me].name:'')}" required><input id="s_title" aria-label="曲目" placeholder="曲目" required><button class="primary" type="submit">新增我的曲目</button></form><p class="note">這場開放獨奏／重奏，想上台的團員請在這裡加上自己的曲目。調整順序需要管理密碼。</p>`:''}
   </section>`:''}
   ${stageDetail(e)}
+  ${(e.photos||[]).length?`<section class="panel"><h3>📎 附件（點照片可以放大）</h3><div class="att">${e.photos.map(id=>`<a href="${photoUrl(id,2000)}" target="_blank" rel="noopener"><img src="${photoUrl(id,500)}" alt="活動附件照片" loading="lazy"></a>`).join('')}</div></section>`:''}
   <section class="panel">
     ${false?`<div class="row"><label for="comp">我的攜伴人數</label><select id="comp" data-e="${e.id}">${[0,1,2,3,4].map(n=>`<option${(myR.companions||0)===n?' selected':''}>${n}</option>`).join('')}</select></div>`:''}
     ${Object.keys(t.groups).map((o,i)=>`<h3>${i?'🙏':'✅'} ${esc(o)}　${t.groups[o].length} 人${!i&&t.guests?'，攜伴 '+t.guests+' 人':''}</h3><div>${t.groups[o].map((x,j)=>row(x,j)).join('')||'<p class="note">目前沒有人。</p>'}</div>`).join('')}
@@ -358,6 +364,8 @@ function vForm(e){
     <label class="w xtra">開放團員新增獨奏／重奏曲目<select id="f_allowSolo"><option value="0">不開放</option><option value="1"${e.allowSolo?' selected':''}>開放</option></select></label>
     <div class="w xtra"><span class="lab">團奏曲目（用箭頭調整順序，編號會自動重排）</span><div id="songEd">${songEd()}</div></div>
     <div class="w more"><button type="button" data-act="more">＋ 顯示更多欄位（邀請單位、服裝、曲目、獨奏…）</button></div>
+    <div class="w"><span class="lab">📎 附件照片（座位表、停車資訊、場地圖⋯，可多張）</span><div class="thumbs" id="efPhotos">${ethumbs()}</div>
+      <input id="e_photo" type="file" accept="image/*" multiple style="margin-top:6px"><p class="note" id="eupMsg">PDF 請先截圖成照片再上傳。</p></div>
     <div class="w stagebox">${(()=>{const st=S.form.stage||(S.form.stage={on:false,rows:[[],[]]});if(!Array.isArray(st.rows)||!st.rows.length)st.rows=[[],[]];return `<label class="chk"><input type="checkbox" id="f_stageOn"${st.on?' checked':''}>🎷 這場要顯示演奏站位</label><div id="stageEd"${st.on?'':' hidden'}>${stEd()}</div>`})()}</div>
     <label class="w">備註<textarea id="f_note">${v('note')}</textarea></label>
     <div class="row w"><button class="primary" type="submit">儲存</button><button type="button" data-act="back">取消</button></div>
@@ -430,6 +438,7 @@ function vBuyForm(f){const v=k=>esc(f[k]??'');
   <label style="flex-direction:row;align-items:center;gap:8px"><input id="b_pay" type="checkbox"${f.pay?' checked':''} style="width:22px;height:22px">要記錄誰已付款</label>
   <p class="note">發起人：${esc(nameOf(f.creator||me))}。之後只有發起人和團長可以編輯、截止或刪除。</p>
   <div class="row"><button class="primary" data-act="savebuy">${f.id?'儲存':'發起'}</button><button data-act="back">取消</button></div></div></section>`}
+function ethumbs(){return ((S.form&&S.form.photos)||[]).map((id,i)=>`<div><img src="${photoUrl(id,300)}" alt=""><button type="button" data-act="rmephoto" data-i="${i}" aria-label="移除照片">✕</button></div>`).join('')}
 function thumbs(f){return (f.photos||[]).map((id,i)=>`<div><img src="${photoUrl(id,300)}" alt=""><button data-act="rmphoto" data-i="${i}" aria-label="移除照片">✕</button></div>`).join('')}
 function syncBuyForm(){const f=S.buyForm,g=id=>{const el=$('#'+id);return el?el.value.trim():''};if(!f||!$('#b_name'))return;
   Object.assign(f,{name:g('b_name'),price:Number(g('b_price'))||0,unit:g('b_unit'),deadline:g('b_dl'),desc:$('#b_desc').value,pay:$('#b_pay').checked,
@@ -591,7 +600,7 @@ document.addEventListener('click',async ev=>{
   else if(a==='more'){S.more=true;$('#evForm').classList.remove('simple')}
   else if(a==='parse'){parseInto($('#f_paste').value)}
   else if(a==='clearform'){try{localStorage.removeItem('sax-draft')}catch(e){}S.form={...(S.form.id?{id:S.form.id}:{}),date:todayStr(),companion:false,songs:[]};render(true);say('')}
-  else if(a==='edit'){S.more=false;gate(()=>{S.form={...S.events[e],songs:[...(S.events[e].songs||[])],stage:(st=>st&&!Array.isArray(st)?JSON.parse(JSON.stringify(st)):{on:false,rows:[[],[]]})(S.events[e].stage)};S.ssel=null;render(true)})}
+  else if(a==='edit'){S.more=false;gate(()=>{S.form={...S.events[e],songs:[...(S.events[e].songs||[])],photos:[...(S.events[e].photos||[])],stage:(st=>st&&!Array.isArray(st)?JSON.parse(JSON.stringify(st)):{on:false,rows:[[],[]]})(S.events[e].stage)};S.ssel=null;render(true)})}
   else if(a==='askdelev'){gate(()=>{S.confirmDel=e;render(true)})}
   else if(a==='soloask'){S.confirmDel='solo:'+b.dataset.id;render(true)}
   else if(a==='solodel'){try{await db.doc('solos/'+b.dataset.id).delete();S.confirmDel=null;render(true)}catch(x){fail(x)}}
@@ -609,6 +618,7 @@ document.addEventListener('click',async ev=>{
   else if(a==='openbuy'){S.buyView=e;S.detail=null;S.pick={};S.qty=1;S.copyText=S.confirmBuy=null;markSeen(e);render(true);scrollTo(0,0)}
   else if(a==='newbuy'){if(!me||!S.members[me]){say('請先在最上面「我是」輸入自己的名字，再發起團購。');return}S.buyForm={photos:[],pay:false,specs:[],deadline:'',creator:me};render(true);scrollTo(0,0)}
   else if(a==='editbuy'){const x=S.buys[e];S.buyForm={...x,photos:[...(x.photos||[])],specs:(x.specs||[]).map(s=>[s[0],[...s[1]]])};render(true);scrollTo(0,0)}
+  else if(a==='rmephoto'){S.form.photos.splice(Number(b.dataset.i),1);$('#efPhotos').innerHTML=ethumbs();saveDraft()}
   else if(a==='rmphoto'){syncBuyForm();S.buyForm.photos.splice(Number(b.dataset.i),1);$('#bfPhotos').innerHTML=thumbs(S.buyForm)}
   else if(a==='savebuy'){syncBuyForm();const f=S.buyForm;if(!f.name){say('請填品名。');return}if(S.uploading){say('照片還在上傳，請稍等。');return}if(S.saving)return;S.saving=true;
     const id=f.id||newId('buys'),data={name:f.name,photos:f.photos||[],price:f.price||0,unit:f.unit||'份',deadline:f.deadline||'',open:f.id?S.buys[f.id].open:true,creator:f.creator||me,pay:!!f.pay,desc:f.desc||'',specs:f.specs||[],at:f.at||Date.now()};
@@ -636,7 +646,7 @@ document.addEventListener('click',async ev=>{
   else if(a==='copy'){const t=chainText(S.events[e]);try{await navigator.clipboard.writeText(t);say('已複製，可以貼到 LINE 群組。')}catch(x){S.copyText=t;render(true);const c=$('#copyBox');if(c){c.focus();c.select()}}}
 });
 function formData(){const g=id=>{const el=$('#'+id);return el?el.value.trim():''};
-  return {...(S.form&&S.form.id?{id:S.form.id}:{}),title:g('f_title'),unit:g('f_unit'),inviter:g('f_inviter'),date:g('f_date'),gather:g('f_gather'),start:g('f_start'),end:g('f_end'),place:g('f_place'),companion:g('f_companion')==='1',songNote:g('f_songNote'),dressF:g('f_dressF'),dressM:g('f_dressM'),songs:(S.form&&S.form.songs)||[],allowSolo:g('f_allowSolo')==='1',note:g('f_note'),stage:S.form.stage?{on:!!S.form.stage.on,rows:S.form.stage.rows}:{on:false,rows:[]},kind:g('f_kind')||'show',options:splitOpts(g('f_options'))}}
+  return {...(S.form&&S.form.id?{id:S.form.id}:{}),title:g('f_title'),unit:g('f_unit'),inviter:g('f_inviter'),date:g('f_date'),gather:g('f_gather'),start:g('f_start'),end:g('f_end'),place:g('f_place'),companion:g('f_companion')==='1',songNote:g('f_songNote'),dressF:g('f_dressF'),dressM:g('f_dressM'),songs:(S.form&&S.form.songs)||[],photos:(S.form&&S.form.photos)||[],allowSolo:g('f_allowSolo')==='1',note:g('f_note'),stage:S.form.stage?{on:!!S.form.stage.on,rows:S.form.stage.rows}:{on:false,rows:[]},kind:g('f_kind')||'show',options:splitOpts(g('f_options'))}}
 let draftT=null;
 function saveDraft(){if(!S.form||S.form.id)return;clearTimeout(draftT);draftT=setTimeout(()=>{try{localStorage.setItem('sax-draft',JSON.stringify(formData()))}catch(e){}},400)}
 document.addEventListener('input',e=>{if(e.target.closest&&e.target.closest('#evForm')&&e.target.id!=='f_paste')saveDraft()});
@@ -727,6 +737,14 @@ document.addEventListener('input',ev=>{
   if(id===me) return; me=id; try{localStorage.setItem('sax-me',me)}catch(e){} render();
 });
 document.addEventListener('change',async ev=>{
+  if(ev.target.id!=='e_photo')return;const files=[...ev.target.files].slice(0,8);ev.target.value='';if(!files.length||!S.form)return;
+  S.form.photos=S.form.photos||[];S.uploading=true;const m=$('#eupMsg');let n=0;
+  for(const f of files){n++;if(m)m.textContent='上傳照片中 '+n+'/'+files.length+'⋯ 請稍候';
+    try{const data=await shrink(f);const j=await api({op:'upload',data});if(S.form){S.form.photos.push(j.id);const t=$('#efPhotos');if(t)t.innerHTML=ethumbs();saveDraft()}}
+    catch(e){if(m)m.textContent='有照片上傳失敗，請再試一次。'}}
+  S.uploading=false;if(m&&m.textContent.startsWith('上傳照片中'))m.textContent='照片已上傳，記得按「儲存」。';
+});
+document.addEventListener('change',async ev=>{
   if(ev.target.id!=='b_photo')return;const files=[...ev.target.files].slice(0,8);ev.target.value='';if(!files.length)return;
   syncBuyForm();S.uploading=true;const m=$('#upMsg');let n=0;
   for(const f of files){n++;if(m)m.textContent='上傳照片中 '+n+'/'+files.length+'⋯ 請稍候';
@@ -751,8 +769,9 @@ document.addEventListener('submit',async ev=>{
     return}
   if(ev.target.id==='evForm'){
     const pend=g('f_song'); if(pend)(S.form.songs||(S.form.songs=[])).push(pend);
-    const data={title:g('f_title'),unit:g('f_unit'),inviter:g('f_inviter'),date:g('f_date'),gather:g('f_gather'),start:g('f_start'),end:g('f_end'),place:g('f_place'),companion:g('f_companion')==='1',songNote:g('f_songNote'),dressF:g('f_dressF'),dressM:g('f_dressM'),songs:S.form.songs||[],allowSolo:g('f_allowSolo')==='1',note:g('f_note'),stage:S.form.stage?{on:!!S.form.stage.on,rows:S.form.stage.rows}:{on:false,rows:[]},kind:g('f_kind')||'show',options:(o=>o.join()==='參加,請假'?[]:o)(splitOpts(g('f_options')))};
+    const data={title:g('f_title'),unit:g('f_unit'),inviter:g('f_inviter'),date:g('f_date'),gather:g('f_gather'),start:g('f_start'),end:g('f_end'),place:g('f_place'),companion:g('f_companion')==='1',songNote:g('f_songNote'),dressF:g('f_dressF'),dressM:g('f_dressM'),songs:S.form.songs||[],photos:S.form.photos||[],allowSolo:g('f_allowSolo')==='1',note:g('f_note'),stage:S.form.stage?{on:!!S.form.stage.on,rows:S.form.stage.rows}:{on:false,rows:[]},kind:g('f_kind')||'show',options:(o=>o.join()==='參加,請假'?[]:o)(splitOpts(g('f_options')))};
     if(!data.title||!data.date) return;
+    if(S.uploading){say('照片還在上傳，請稍等一下再按「儲存」。');return}
     if(S.saving) return; S.saving=true; S.lastRoster=S.form.roster||null;
     const isNew=!S.form.id, ref=isNew?db.collection('events').doc():db.doc('events/'+S.form.id);
     S.form=null;S.detail=ref.id;markSeen(ref.id);say('儲存中⋯');render(true);
