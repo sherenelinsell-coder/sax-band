@@ -444,7 +444,8 @@ async function shrink(file){const img=await new Promise((ok,no)=>{const i=new Im
 function vMembers(){
   return `<section class="panel"><h2>團員名單　${memList().length} 人</h2>
     ${S.canWrite?`<form class="row" id="memForm"><input id="m_name" placeholder="姓名" required aria-label="姓名"><button class="primary" type="submit">加入團員</button></form>`:''}
-    <div>${memList().map(m=>`<div class="mem"><span class="n">${esc(m.name)}${m.part?`<span class="part">${esc(m.part)}</span>`:''}</span>${S.canWrite?(S.confirmDel===m.id?`<button data-act="delmem" data-m="${m.id}" style="color:var(--leave)">確定移除</button><button data-act="nodel">取消</button>`:`<button class="link" data-act="askdel" data-e="${m.id}">移除</button>`):''}</div>`).join('')||'<p class="note">還沒有團員。先把團員姓名加進來，大家才能選自己的名字報名。</p>'}</div></section>`;
+    <p class="note">老師或常一起演出的朋友也可以加進來（例如「侯老師」），就能報名、排站位。改名只要在這裡改，團員手機不用做任何事。</p>
+    <div>${memList().map(m=>S.ren===m.id?`<form class="mem row" id="renForm" data-m="${m.id}"><input id="r_name" value="${esc(m.name)}" aria-label="新的名字" required style="flex:1;min-width:0"><button class="primary" type="submit">儲存</button><button type="button" data-act="renx">取消</button></form>`:`<div class="mem"><span class="n">${esc(m.name)}${m.part?`<span class="part">${esc(m.part)}</span>`:''}</span>${S.canWrite?`<button class="link" data-act="ren" data-m="${m.id}">改名</button>`:''}${S.canWrite?(S.confirmDel===m.id?`<button data-act="delmem" data-m="${m.id}" style="color:var(--leave)">確定移除</button><button data-act="nodel">取消</button>`:`<button class="link" data-act="askdel" data-e="${m.id}">移除</button>`):''}</div>`).join('')||'<p class="note">還沒有團員。先把團員姓名加進來，大家才能選自己的名字報名。</p>'}</div></section>`;
 }
 function render(force){
   const ae=document.activeElement;
@@ -626,7 +627,9 @@ document.addEventListener('click',async ev=>{
   else if(a==='copybuy'){const t=buyText(S.buys[e]);try{await navigator.clipboard.writeText(t);say('已複製，可以貼到 LINE 或傳給廠商。')}catch(x){S.copyText=t;render(true)}}
   else if(a==='calday'){S.calDay=e||null;render(true)}
   else if(a==='mon'){S.calDay=null;let [y,m]=S.month;m+=Number(b.dataset.d);S.month=[y+Math.floor(m/12),(m%12+12)%12];render(true)}
-  else if(a==='askdel'){S.confirmDel=e;render(true)}
+  else if(a==='askdel'){gate(()=>{S.confirmDel=e;render(true)})}
+  else if(a==='ren'){const m=b.dataset.m;gate(()=>{S.ren=m;S.confirmDel=null;render(true);const i=$('#r_name');if(i){i.focus();i.select()}})}
+  else if(a==='renx'){S.ren=null;render(true)}
   else if(a==='nodel'){S.confirmDel=null;render(true)}
   else if(a==='del'){try{await db.doc('events/'+e).delete();purge('eventId',e);S.detail=S.confirmDel=null;render(true)}catch(x){fail(x)}}
   else if(a==='delmem'){const m=b.dataset.m;try{await db.doc('members/'+m).delete();purge('memberId',m);S.confirmDel=null;render(true)}catch(x){fail(x)}}
@@ -758,6 +761,15 @@ document.addEventListener('submit',async ev=>{
       if(roster){say('已儲存活動，正在更新報名名單⋯');await applyRoster(ref.id,data,roster)}
       say('已儲存。');render(true)}catch(x){fail(x)}finally{S.saving=false}
   }
+  if(ev.target.id==='renForm'){
+    const id=ev.target.dataset.m,old=S.members[id]&&S.members[id].name,name=g('r_name');if(!name||!old)return;
+    if(name===old){S.ren=null;render(true);return}
+    if(memList().some(m=>m.name===name&&m.id!==id)){say('名單裡已經有「'+name+'」。');return}
+    S.ren=null;
+    try{await db.doc('members/'+id).update({name});
+      for(const e of Object.values(S.events)){const st=e.stage;if(st&&!Array.isArray(st)&&Array.isArray(st.rows)&&st.rows.some(r=>r.includes(old))){const ns={...st,rows:st.rows.map(r=>r.map(n=>n===old?name:n))};await db.doc('events/'+e.id).update({stage:ns})}}
+      say('已把「'+old+'」改成「'+name+'」。');render(true)}catch(x){fail(x)}
+    return}
   if(ev.target.id==='memForm'){
     const name=g('m_name'); if(!name) return;
     if(memList().some(m=>m.name===name)){say('名單裡已經有「'+name+'」。');return}
